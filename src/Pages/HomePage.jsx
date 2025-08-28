@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Video, Shield, UserPlus, MessageCircle, ArrowRight, CheckCircle, BookOpen, Code, Palette, Music, Languages } from 'lucide-react';
-import Aurora from '../components/Aurora';
+// import Aurora from '../components/Aurora';
 
 // --- Reusable Components for this page ---
 
@@ -44,12 +44,12 @@ const HeroSection = ({ onGetStartedClick }) => {
   return (
     <section className="relative min-h-screen flex items-center justify-center text-center px-4 overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <Aurora
+        {/* <Aurora
   colorStops={["#3A29FF", "#FF94B4", "#FF3232"]}
   blend={0.5}
   amplitude={1.0}
   speed={0.5}
-/>
+/> */}
       </div>
       <div className="relative z-10 max-w-4xl mx-auto">
         <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
