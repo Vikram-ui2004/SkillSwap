@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import HomePage from './pages/HomePage.jsx';
-import Dashboard from './pages/Dashboard';
+import HomePage from './Pages/HomePage';
+import Dashboard from './Pages/Dashboard';
 import AuthModal from './components/AuthModal';
 
 function App() {
