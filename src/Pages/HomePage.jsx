@@ -296,7 +296,7 @@ const HomePage = ({ onGetStartedClick }) => {
       <HowItWorksSection />
       <TestimonialsSection />
       <CtaSection onGetStartedClick={onGetStartedClick} />
-      <Footer />
+      
     </div>
   );
 };
