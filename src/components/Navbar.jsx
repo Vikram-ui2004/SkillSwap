@@ -97,7 +97,7 @@ const Navbar = ({ isLoggedIn, onLoginClick, onLogoutClick, userName }) => {
             initial="hidden"
             animate="visible"
             exit="hidden"
-            className="fixed inset-x-0 top-0 bottom-0 z-50 md:hidden rounded-t-3xl
+            className="fixed inset-x-0 top-0 bottom-0 z-50 md:hidden 
                        bg-white/95 backdrop-blur-xl border-b border-black/10"
           >
             <div className="flex justify-end p-6">

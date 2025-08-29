@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Video, Shield, UserPlus, MessageCircle, Quote } from 'lucide-react';
+import {motion, AnimatePresence } from 'framer-motion';
 import svg1 from '../assets/svg1.svg';
 import svg2 from '../assets/svg2.svg';
 import svg3 from '../assets/svg3.svg';
@@ -43,14 +44,10 @@ const SvgIcon = ({ src, className, alt }) => (
 // --- HERO Section ---
 const HeroSection = ({ onGetStartedClick }) => {
   const [currentSkill, setCurrentSkill] = useState(0);
+  const [current, setCurrent] = useState(0);
   const skills = ['Code', 'Art', 'Music', 'Languages'];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSkill((prev) => (prev + 1) % skills.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+
 
   const svgSources = [
     { src: svg1, alt: 'SkillSwap Icon 1' },
@@ -59,8 +56,16 @@ const HeroSection = ({ onGetStartedClick }) => {
     { src: svg4, alt: 'SkillSwap Icon 4' },
   ];
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSkill((prev) => (prev + 1) % skills.length);
+      setCurrent((prev) => (prev + 1) % svgSources .length);
+    }, 2000);
+    return () => clearInterval(interval);
+  },[svgSources.length]);
+
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 overflow-hidden pt-20 sm:pt-28">
+    <section className="relative min-h-[90vh] flex items-center justify-center text-center px-4 sm:px-6 lg:px-8 overflow-hidden pt-40 sm:pt-28">
       
       {/* Background */}
       <div className="absolute inset-0 z-0">
@@ -74,9 +79,11 @@ const HeroSection = ({ onGetStartedClick }) => {
             font-extrabold text-[#131735] mb-6 leading-snug">
           Learn <span className="text-[#7E69AB]">Anything.</span>
           <br />
-          Share Your{" "}
+         Share Your{" "}
+         
           <span className="relative inline-block h-10 sm:h-14 md:h-20 text-[#131735]">
             {skills.map((skill, index) => (
+           
               <span
                 key={skill}
                 className={`absolute inset-0 transition-all duration-500 ease-in-out 
@@ -106,23 +113,39 @@ const HeroSection = ({ onGetStartedClick }) => {
         </button>
 
         {/* SVGs */}
-        <div className="mt-12 flex flex-wrap justify-center items-center gap-6 sm:gap-10">
-          {/* Mobile: only svg1 but BIG */}
-          <SvgIcon
-            src={svgSources[0].src}
-            alt={svgSources[0].alt}
-            className="block sm:hidden w-32"
+       <div className="mt-12 flex flex-wrap justify-center items-center gap-6 sm:gap-10">
+      {/* Mobile: Animate icons one by one */}
+      <div className=" sm:hidden w-32 h-32 flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={svgSources[current].src}
+            src={svgSources[current].src}
+            alt={svgSources[current].alt}
+            className="w-30 h-30"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+     transition={{ duration: 1, delay: 1 }}
+
+            
           />
-          {/* Tablet+ : show all icons */}
-          {svgSources.map(({ src, alt }, index) => (
-            <SvgIcon
-              key={index}
-              src={src}
-              alt={alt}
-              className="hidden sm:block w-20 md:w-28 lg:w-36"
-            />
-          ))}
-        </div>
+        </AnimatePresence>
+      </div>
+
+      {/* Tablet+ : show all icons */}
+      <div className="hidden sm:flex flex-wrap justify-center items-center gap-6 sm:gap-10">
+        {svgSources.map(({ src, alt }, index) => (
+          <img
+            key={index}
+            src={src}
+            alt={alt}
+            className="w-20 md:w-28 lg:w-36"
+          />
+        ))}
+      </div>
+    </div>  
+
+
       </div>
     </section>
   );
@@ -248,8 +271,8 @@ const TestimonialsSection = () => {
 
 // --- Call to Action ---
 const CtaSection = ({ onGetStartedClick }) => (
-  <section className="py-16 sm:py-20">
-    <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 bg-white/80 
+  <section className="py-16 px-4 sm:py-20">
+    <div className="max-w-4xl mx-auto text-center py-10 px-4 sm:px-6 lg:px-8 bg-white/80 
         border border-black/5 rounded-2xl shadow-md">
       <h2 className="text-3xl sm:text-4xl font-bold text-[#1f2040] mb-6">
         Ready to Transform Your Skills?
