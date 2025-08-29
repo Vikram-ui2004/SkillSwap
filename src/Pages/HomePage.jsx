@@ -72,7 +72,7 @@ const HeroSection = ({ onGetStartedClick }) => {
   }, [svgSources.length]);
 
   return (
-    <section className="relative min-h-screen pt-30 flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-gradient-to-b from-white to-white/70">
+    <section className="relative min-h-screen pt-25 flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-gradient-to-b from-white to-white/70">
     
 
       {/* Floating Glass Blobs */}
