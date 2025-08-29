@@ -131,7 +131,7 @@ const HeroSection = ({ onGetStartedClick }) => {
         </div>
 
         {/* Animated Icons */}
-        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-12">
+        <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-12">
           {/* Mobile - One Animated Icon */}
           <div className="sm:hidden w-28 h-28 flex items-center justify-center">
             <AnimatePresence mode="wait">
@@ -345,8 +345,11 @@ const Footer = () => (
 const HomePage = ({ onGetStartedClick }) => {
   return (
     <div
-      className="min-h-screen bg-[radial-gradient(1200px_800px_at_100%_22%,#b8a4d7_0%,transparent_60%),radial-gradient(900px_620px_at_0%_92%,#d9c4ee_0%,transparent_55%),linear-gradient(180deg,#efe6f8_0%,#e3ecff_42%,#ece1f6_100%)] 
-        text-[#1f2040]"
+className="min-h-screen bg-[radial-gradient(1200px_800px_at_100%_20%,#dbe7ff_0%,transparent_60%),radial-gradient(900px_620px_at_0%_90%,#f3e8ff_0%,transparent_55%),linear-gradient(180deg,#ffffff_0%,#f0f4ff_40%,#f5ecff_100%)] 
+text-[#2d2d44]"
+
+
+
     >
       <HeroSection onGetStartedClick={onGetStartedClick} />
       <FeaturesSection />
