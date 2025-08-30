@@ -428,7 +428,7 @@ const HomePage = () => {
             <PopularSkillsSection />
             <TestimonialsSection />
             <CtaSection onGetStartedClick={handleGetStarted} />
-            <Footer />
+          
         </div>
     );
 };
