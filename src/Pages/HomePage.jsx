@@ -306,11 +306,7 @@ const TestimonialsSection = () => {
      </>
   );
 };
-<<<<<<< HEAD
-=======
 
-
->>>>>>> 92f6dd8b99bb917a2100a371c1602565c993205f
 // --- Call to Action ---
 const CtaSection = ({ onGetStartedClick }) => (
   <section className="py-16 px-4 sm:py-20">
@@ -338,8 +334,6 @@ const CtaSection = ({ onGetStartedClick }) => (
   </section>
 );
 
-<<<<<<< HEAD
-=======
 
 // --- Footer Section ---
 const Footer = () => (
@@ -362,8 +356,6 @@ const Footer = () => (
     </div>
   </footer>
 );
->>>>>>> 92f6dd8b99bb917a2100a371c1602565c993205f
-
 
 // --- MAIN HomePage ---
 const HomePage = () => {
@@ -375,16 +367,10 @@ const HomePage = () => {
 
   return (
     <div
-<<<<<<< HEAD
+
 className="min-h-screen bg-[radial-gradient(1200px_800px_at_100%_20%,#dbe7ff_0%,transparent_60%),radial-gradient(900px_620px_at_0%_90%,#f3e8ff_0%,transparent_55%),linear-gradient(180deg,#ffffff_0%,#f0f4ff_40%,#f5ecff_100%)] 
 text-[#2d2d44]" >
-      <HeroSection onGetStartedClick={onGetStartedClick} />
-=======
-      className="min-h-screen bg-[radial-gradient(1200px_800px_at_100%_20%,#dbe7ff_0%,transparent_60%),radial-gradient(900px_620px_at_0%_90%,#f3e8ff_0%,transparent_55%),linear-gradient(180deg,#ffffff_0%,#f0f4ff_40%,#f5ecff_100%)] 
-text-[#2d2d44]"
-    >
       <HeroSection onGetStartedClick={handleGetStarted} />
->>>>>>> 92f6dd8b99bb917a2100a371c1602565c993205f
       <FeaturesSection />
       <HowItWorksSection />
       <TestimonialsSection />
