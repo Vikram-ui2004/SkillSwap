@@ -138,7 +138,7 @@ const HeroSection = ({ onGetStartedClick }) => {
     }, []);
 
     return (
-        <section className="relative min-h-screen flex flex-col justify-center items-center text-center px-4 sm:px-6 overflow-hidden">
+        <section className="relative min-h-screen pt-30 flex flex-col justify-center items-center text-center px-4 sm:px-6 overflow-hidden">
             {/* Background Animated Blobs */}
             <div className="absolute inset-0 z-0">
                 <motion.div
@@ -166,7 +166,7 @@ const HeroSection = ({ onGetStartedClick }) => {
                     className="text-4xl sm:text-6xl md:text-7xl font-extrabold leading-tight text-gray-900"
                 >
                     Learn <span className="text-purple-600">Anything.</span> Share Your{" "}
-                    <span className="relative inline-block h-16 md:h-24 overflow-hidden align-middle">
+                    <span className="relative inline-block w-60 md:w-100 sm:w-90 h-16 md:h-24 sm:h-20 overflow-hidden align-middle">
                         <AnimatePresence mode="wait">
                             <motion.span
                                 key={skills[currentSkill]}
@@ -210,8 +210,8 @@ const HeroSection = ({ onGetStartedClick }) => {
                 </motion.div>
             </div>
 
-            <div className="absolute bottom-5 w-full flex justify-center items-center">
-                 <div className="hidden sm:flex flex-wrap justify-center items-center gap-x-16 gap-y-8 w-full max-w-4xl">
+            <div className="pt-15 bottom-1 w-full flex justify-center items-center">
+                 <div className="flex flex-wrap justify-center items-center gap-x-16 gap-y-8 w-full max-w-4xl">
                     {svgIcons.map((icon, index) => (
                         <motion.div
                             key={index}
@@ -223,7 +223,7 @@ const HeroSection = ({ onGetStartedClick }) => {
                                 ease: "easeInOut",
                             }}
                             whileHover={{ scale: 1.2, rotate: 5, color: '#8b5cf6' }}
-                            className="text-gray-400"
+                            className="text-gray-400 "
                         >
                             {icon}
                         </motion.div>
@@ -342,7 +342,7 @@ const TestimonialsSection = () => {
                     animate={{ x: ['0%', '-50%'] }}
                     transition={{
                         ease: 'linear',
-                        duration: 40,
+                        duration: 10,
                         repeat: Infinity,
                     }}
                 >
