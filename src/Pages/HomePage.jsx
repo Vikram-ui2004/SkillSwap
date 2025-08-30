@@ -79,7 +79,7 @@ const HeroSection = ({ onGetStartedClick }) => {
 
 
   return (
-    <section className="relative min-h-screen lg:pt-30 flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-gradient-to-b from-white to-white/70">
+    <section className="relative min-h-screen pt-20 md:pt-30 sm:pt-30 lg:pt-30 flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-gradient-to-b from-white to-white/70">
     
 
 
@@ -265,7 +265,7 @@ const TestimonialsSection = () => {
     const [testimonials, setTestimonials] = useState([]);
 
   const fetchTestimonials = () => {
-    fetch("http://localhost:5000/api/testimonials")
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/testimonials`)
       .then((res) => res.json())
       .then((data) => setTestimonials(data))
       .catch((err) => console.error("Error fetching testimonials:", err));

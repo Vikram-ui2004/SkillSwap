@@ -10,7 +10,7 @@ const FooterLink = ({ href, children }) => (
 
 const Footer = () => {
   return (
-    <footer className="bg-purple-600 text-white pt-16 pb-8 ">
+    <footer className="bg-purple-900 text-white pt-16 pb-8 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main footer content with multiple columns */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
