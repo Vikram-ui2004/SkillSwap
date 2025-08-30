@@ -12,6 +12,7 @@ import svg1 from "../assets/svg1.svg";
 import svg2 from "../assets/svg2.svg";
 import svg3 from "../assets/svg3.svg";
 import svg4 from "../assets/svg4.svg";
+import UploadTestimonial from "../components/UploadTestimonial";
 
 // --- Reusable Components ---
 const FeatureCard = ({ icon, title, children }) => (
@@ -247,25 +248,21 @@ const HowItWorksSection = () => (
 
 // --- Testimonials Section ---
 const TestimonialsSection = () => {
-  const testimonials = [
-    {
-      name: "Aarav Sharma",
-      role: "Web Developer",
-      text: "SkillSwap helped me find amazing mentors in JavaScript. I now also share my React knowledge.",
-    },
-    {
-      name: "Priya Verma",
-      role: "Graphic Designer",
-      text: "I connected with people worldwide to exchange design tips and even picked up Spanish!",
-    },
-    {
-      name: "Rohit Khanna",
-      role: "Student",
-      text: "The best way to learn quickly — I shared my guitar skills and learned Python in return.",
-    },
-  ];
+    const [testimonials, setTestimonials] = useState([]);
+
+  const fetchTestimonials = () => {
+    fetch("http://localhost:5000/api/testimonials")
+      .then((res) => res.json())
+      .then((data) => setTestimonials(data))
+      .catch((err) => console.error("Error fetching testimonials:", err));
+  };
+
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
 
   return (
+    <>
     <section id="testimonials" className="py-16 sm:py-24 bg-[#f9f6ff] relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl sm:text-4xl font-bold text-[#1f2040] mb-12">
@@ -289,9 +286,10 @@ const TestimonialsSection = () => {
         </div>
       </div>
     </section>
+     {/* <UploadTestimonial onSuccess={() => fetchTestimonials()} />  */}
+     </>
   );
 };
-
 // --- Call to Action ---
 const CtaSection = ({ onGetStartedClick }) => (
   <section className="py-16 px-4 sm:py-20">
@@ -319,38 +317,13 @@ const CtaSection = ({ onGetStartedClick }) => (
   </section>
 );
 
-// --- Footer Section ---
-const Footer = () => (
-  <footer className="bg-[#1f2040] text-white py-10 mt-12">
-    <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-6">
-      <p className="text-sm">
-        © {new Date().getFullYear()} SkillSwap. All rights reserved.
-      </p>
-      <div className="flex gap-6 text-sm">
-        <a href="#features" className="hover:underline">
-          Features
-        </a>
-        <a href="#how-it-works" className="hover:underline">
-          How It Works
-        </a>
-        <a href="#testimonials" className="hover:underline">
-          Testimonials
-        </a>
-      </div>
-    </div>
-  </footer>
-);
 
 // --- MAIN HomePage ---
 const HomePage = ({ onGetStartedClick }) => {
   return (
     <div
 className="min-h-screen bg-[radial-gradient(1200px_800px_at_100%_20%,#dbe7ff_0%,transparent_60%),radial-gradient(900px_620px_at_0%_90%,#f3e8ff_0%,transparent_55%),linear-gradient(180deg,#ffffff_0%,#f0f4ff_40%,#f5ecff_100%)] 
-text-[#2d2d44]"
-
-
-
-    >
+text-[#2d2d44]" >
       <HeroSection onGetStartedClick={onGetStartedClick} />
       <FeaturesSection />
       <HowItWorksSection />
