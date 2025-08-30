@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom'; // Make sure to install react-router-dom
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Menu, X, UserCircle, LogOut } from 'lucide-react';
 
@@ -6,7 +7,8 @@ const NavLink = ({ children, href }) => {
   return (
     <a
       href={href}
-      className="relative text-lg font-medium text-[#1f2040] hover:text-[#7E69AB] transition-colors group"
+      // Reduced font size on large screens
+      className="relative text-lg lg:text-base font-medium text-[#1f2040] hover:text-[#7E69AB] transition-colors group"
     >
       <span className="relative z-10">{children}</span>
       <span className="absolute left-0 bottom-0 w-full h-0.5 bg-[#7E69AB] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
@@ -19,14 +21,15 @@ const Navbar = ({ isLoggedIn, onLoginClick, onLogoutClick, userName }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  
+  // Hook to get current page location
+  const location = useLocation();
 
   useEffect(() => {
     const controlNavbar = () => {
       if (window.scrollY > lastScrollY && window.scrollY > 100) {
-        // Scrolling down
         setShowNav(false);
       } else {
-        // Scrolling up
         setShowNav(true);
       }
       setLastScrollY(window.scrollY);
@@ -48,10 +51,12 @@ const Navbar = ({ isLoggedIn, onLoginClick, onLogoutClick, userName }) => {
       transition: { delay: i * 0.1, type: 'spring', stiffness: 120 }
     }),
   };
+  
+  // Determine starting index for mobile menu animation based on if Home link is shown
+  const homeLinkOffset = location.pathname !== '/' ? 1 : 0;
 
   return (
     <>
-      {/* White glass navbar */}
       <motion.nav
         animate={{ y: showNav ? 0 : -100 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
@@ -59,21 +64,21 @@ const Navbar = ({ isLoggedIn, onLoginClick, onLogoutClick, userName }) => {
                    bg-white/90 backdrop-blur-xl border border-black/10 "
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <a href="#" className="flex items-center space-x-2">
+          <div className="flex justify-between items-center h-12">
+            <a href="/" className="flex items-center space-x-2">
               <BookOpen className="w-8 h-8 text-[#7E69AB]" />
               <span className="text-2xl font-bold text-[#1f2040]">SkillSwap</span>
             </a>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-10">
+            <div className="hidden md:flex items-center space-x-8">
               {isLoggedIn ? (
                 <>
-                  <span className="text-lg text-[#384060]">Hello, {userName}</span>
+                  <span className="text-lg lg:text-base text-[#384060]">Hello, {userName}</span>
+                  {/* Conditionally show Home link */}
+                  {location.pathname !== '/' && <NavLink href="/">Home</NavLink>}
                   <button
                     onClick={onLogoutClick}
-                    className="flex items-center space-x-2 text-lg font-medium text-[#1f2040] hover:text-[#7E69AB] transition-colors"
+                    className="flex items-center space-x-2 text-lg lg:text-base font-medium text-[#1f2040] hover:text-[#7E69AB] transition-colors"
                   >
                     <LogOut size={20} />
                     <span>Logout</span>
@@ -81,11 +86,12 @@ const Navbar = ({ isLoggedIn, onLoginClick, onLogoutClick, userName }) => {
                 </>
               ) : (
                 <>
-                  <NavLink href="#features">Features</NavLink>
-                  <NavLink href="#how-it-works">How it Works</NavLink>
+                  {/* Conditionally show Home link */}
+                  {location.pathname !== '/' && <NavLink href="/">Home</NavLink>}
+                  <NavLink href="/about">About Us</NavLink>
                   <button
                     onClick={onLoginClick}
-                    className="bg-[#7E69AB] text-white px-6 py-2 rounded-full text-lg font-semibold
+                    className="bg-[#7E69AB] text-white px-6 py-2 rounded-full text-lg lg:text-base font-semibold
                                hover:bg-[#5f4a96] hover:shadow-lg transform hover:scale-105 transition-all duration-300"
                   >
                     Get Started
@@ -94,7 +100,6 @@ const Navbar = ({ isLoggedIn, onLoginClick, onLogoutClick, userName }) => {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(true)}
               className="md:hidden text-[#1f2040] hover:text-[#7E69AB] transition-colors"
@@ -106,7 +111,6 @@ const Navbar = ({ isLoggedIn, onLoginClick, onLogoutClick, userName }) => {
         </div>
       </motion.nav>
 
-      {/* Mobile Menu (white sheet) */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -129,57 +133,37 @@ const Navbar = ({ isLoggedIn, onLoginClick, onLogoutClick, userName }) => {
             <div className="flex flex-col items-center justify-center h-full -mt-20 space-y-8">
               {isLoggedIn ? (
                 <>
-                  <motion.div
-                    custom={0}
-                    variants={listItemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="flex items-center space-x-3 text-2xl text-[#1f2040]"
-                  >
+                  {/* Conditionally show Home link for mobile */}
+                  {location.pathname !== '/' && (
+                    <motion.a href="/" onClick={() => setMobileMenuOpen(false)} custom={0} variants={listItemVariants} initial="hidden" animate="visible" className="text-3xl font-semibold text-[#1f2040] hover:text-[#7E69AB] transition-colors">
+                      Home
+                    </motion.a>
+                  )}
+                  <motion.div custom={homeLinkOffset} variants={listItemVariants} initial="hidden" animate="visible" className="flex items-center space-x-3 text-2xl text-[#1f2040]">
                     <UserCircle size={30} />
                     <span>Hello, {userName}</span>
                   </motion.div>
-                  <motion.button
-                    onClick={onLogoutClick}
-                    custom={1}
-                    variants={listItemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="flex items-center space-x-3 text-2xl text-[#1f2040] hover:text-[#7E69AB] transition-colors"
-                  >
+                  <motion.button onClick={onLogoutClick} custom={homeLinkOffset + 1} variants={listItemVariants} initial="hidden" animate="visible" className="flex items-center space-x-3 text-2xl text-[#1f2040] hover:text-[#7E69AB] transition-colors">
                     <LogOut size={30} />
                     <span>Logout</span>
                   </motion.button>
                 </>
               ) : (
                 <>
-                  <motion.a
-                    href="#features"
-                    onClick={() => setMobileMenuOpen(false)}
-                    custom={0}
-                    variants={listItemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="text-3xl font-semibold text-[#1f2040] hover:text-[#7E69AB] transition-colors"
-                  >
-                    Features
+                  {/* Conditionally show Home link for mobile */}
+                  {location.pathname !== '/' && (
+                    <motion.a href="/" onClick={() => setMobileMenuOpen(false)} custom={0} variants={listItemVariants} initial="hidden" animate="visible" className="text-3xl font-semibold text-[#1f2040] hover:text-[#7E69AB] transition-colors">
+                      Home
+                    </motion.a>
+                  )}
+                  <motion.a href="/about" onClick={() => setMobileMenuOpen(false)} custom={homeLinkOffset} variants={listItemVariants} initial="hidden" animate="visible" className="text-3xl font-semibold text-[#1f2040] hover:text-[#7E69AB] transition-colors">
+                    About Us
                   </motion.a>
-                  <motion.a
-                    href="#how-it-works"
-                    onClick={() => setMobileMenuOpen(false)}
-                    custom={1}
-                    variants={listItemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="text-3xl font-semibold text-[#1f2040] hover:text-[#7E69AB] transition-colors"
-                  >
-                    How it Works
-                  </motion.a>
-                  <motion.div custom={2} variants={listItemVariants} initial="hidden" animate="visible">
+                  <motion.div custom={homeLinkOffset + 1} variants={listItemVariants} initial="hidden" animate="visible">
                     <button
                       onClick={() => { onLoginClick(); setMobileMenuOpen(false); }}
-                      className="bg-purple-600 text-white px-8 py-4 rounded-full text-xl font-semibold
-                                 hover:bg-purple-800 hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                      className="bg-[#7E69AB] text-white px-8 py-4 rounded-full text-xl font-semibold
+                                 hover:bg-[#5f4a96] hover:shadow-lg transform hover:scale-105 transition-all duration-300"
                     >
                       Get Started
                     </button>
