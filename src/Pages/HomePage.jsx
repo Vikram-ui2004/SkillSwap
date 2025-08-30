@@ -8,11 +8,13 @@ import {
   Quote,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import svg1 from "../assets/svg1.svg";
 import svg2 from "../assets/svg2.svg";
 import svg3 from "../assets/svg3.svg";
 import svg4 from "../assets/svg4.svg";
 import UploadTestimonial from "../components/UploadTestimonial";
+
 
 // --- Reusable Components ---
 const FeatureCard = ({ icon, title, children }) => (
@@ -35,6 +37,7 @@ const FeatureCard = ({ icon, title, children }) => (
   </div>
 );
 
+
 const StepCard = ({ icon, title, desc, step }) => (
   <div className="bg-white/85 p-4 sm:p-6 rounded-xl shadow-md border border-black/5 text-center">
     <div
@@ -52,9 +55,11 @@ const StepCard = ({ icon, title, desc, step }) => (
 );
 
 
+
 const HeroSection = ({ onGetStartedClick }) => {
   const [currentSkill, setCurrentSkill] = useState(0);
   const [currentIcon, setCurrentIcon] = useState(0);
+
 
   const skills = ["Code", "Art", "Music", "Design"];
   const svgSources = [
@@ -72,9 +77,11 @@ const HeroSection = ({ onGetStartedClick }) => {
     return () => clearInterval(interval);
   }, [svgSources.length]);
 
+
   return (
-    <section className="relative min-h-screen pt-15 flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-gradient-to-b from-white to-white/70">
+    <section className="relative min-h-screen lg:pt-30 flex flex-col justify-center items-center text-center px-6 overflow-hidden bg-gradient-to-b from-white to-white/70">
     
+
 
       {/* Floating Glass Blobs */}
       <motion.div
@@ -110,11 +117,13 @@ const HeroSection = ({ onGetStartedClick }) => {
           </span>
         </h1>
 
+
         {/* Subtext */}
         <p className="mt-6 text-lg sm:text-xl md:text-2xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
           Learn from experts, share your skills, and be part of a growing
           knowledge-sharing community built for dreamers and doers.
         </p>
+
 
         {/* Call To Action */}
         <div className="mt-10">
@@ -130,6 +139,7 @@ const HeroSection = ({ onGetStartedClick }) => {
             Start Your Journey
           </motion.button>
         </div>
+
 
         {/* Animated Icons */}
         <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-12">
@@ -148,6 +158,7 @@ const HeroSection = ({ onGetStartedClick }) => {
               />
             </AnimatePresence>
           </div>
+
 
           {/* Tablet+ - Floating Grid of Icons */}
           <div className="hidden  sm:flex flex-wrap justify-center items-center gap-30">
@@ -173,6 +184,7 @@ const HeroSection = ({ onGetStartedClick }) => {
     </section>
   );
 };
+
 
 // --- Features Section ---
 const FeaturesSection = () => (
@@ -203,6 +215,7 @@ const FeaturesSection = () => (
     </div>
   </section>
 );
+
 
 // --- How It Works Section ---
 const HowItWorksSection = () => (
@@ -246,6 +259,7 @@ const HowItWorksSection = () => (
   </section>
 );
 
+
 // --- Testimonials Section ---
 const TestimonialsSection = () => {
     const [testimonials, setTestimonials] = useState([]);
@@ -261,6 +275,7 @@ const TestimonialsSection = () => {
     fetchTestimonials();
   }, []);
 
+
   return (
     <>
     <section id="testimonials" className="py-16 sm:py-24 bg-[#f9f6ff] relative">
@@ -268,6 +283,7 @@ const TestimonialsSection = () => {
         <h2 className="text-3xl sm:text-4xl font-bold text-[#1f2040] mb-12">
           What Our Community Says
         </h2>
+
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((t, i) => (
@@ -290,6 +306,11 @@ const TestimonialsSection = () => {
      </>
   );
 };
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 92f6dd8b99bb917a2100a371c1602565c993205f
 // --- Call to Action ---
 const CtaSection = ({ onGetStartedClick }) => (
   <section className="py-16 px-4 sm:py-20">
@@ -317,20 +338,60 @@ const CtaSection = ({ onGetStartedClick }) => (
   </section>
 );
 
+<<<<<<< HEAD
+=======
+
+// --- Footer Section ---
+const Footer = () => (
+  <footer className="bg-[#1f2040] text-white py-10 mt-12">
+    <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-6">
+      <p className="text-sm">
+        © {new Date().getFullYear()} SkillSwap. All rights reserved.
+      </p>
+      <div className="flex gap-6 text-sm">
+        <a href="#features" className="hover:underline">
+          Features
+        </a>
+        <a href="#how-it-works" className="hover:underline">
+          How It Works
+        </a>
+        <a href="#testimonials" className="hover:underline">
+          Testimonials
+        </a>
+      </div>
+    </div>
+  </footer>
+);
+>>>>>>> 92f6dd8b99bb917a2100a371c1602565c993205f
+
 
 // --- MAIN HomePage ---
-const HomePage = ({ onGetStartedClick }) => {
+const HomePage = () => {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate('/auth');
+  };
+
   return (
     <div
+<<<<<<< HEAD
 className="min-h-screen bg-[radial-gradient(1200px_800px_at_100%_20%,#dbe7ff_0%,transparent_60%),radial-gradient(900px_620px_at_0%_90%,#f3e8ff_0%,transparent_55%),linear-gradient(180deg,#ffffff_0%,#f0f4ff_40%,#f5ecff_100%)] 
 text-[#2d2d44]" >
       <HeroSection onGetStartedClick={onGetStartedClick} />
+=======
+      className="min-h-screen bg-[radial-gradient(1200px_800px_at_100%_20%,#dbe7ff_0%,transparent_60%),radial-gradient(900px_620px_at_0%_90%,#f3e8ff_0%,transparent_55%),linear-gradient(180deg,#ffffff_0%,#f0f4ff_40%,#f5ecff_100%)] 
+text-[#2d2d44]"
+    >
+      <HeroSection onGetStartedClick={handleGetStarted} />
+>>>>>>> 92f6dd8b99bb917a2100a371c1602565c993205f
       <FeaturesSection />
       <HowItWorksSection />
       <TestimonialsSection />
-      <CtaSection onGetStartedClick={onGetStartedClick} />
+      <CtaSection onGetStartedClick={handleGetStarted} />
     </div>
   );
 };
+
 
 export default HomePage;

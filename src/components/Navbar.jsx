@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Menu, X, UserCircle, LogOut } from 'lucide-react';
 
@@ -16,7 +16,25 @@ const NavLink = ({ children, href }) => {
 
 // --- Main Navbar Component ---
 const Navbar = ({ isLoggedIn, onLoginClick, onLogoutClick, userName }) => {
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showNav, setShowNav] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const controlNavbar = () => {
+      if (window.scrollY > lastScrollY && window.scrollY > 100) {
+        // Scrolling down
+        setShowNav(false);
+      } else {
+        // Scrolling up
+        setShowNav(true);
+      }
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', controlNavbar);
+    return () => window.removeEventListener('scroll', controlNavbar);
+  }, [lastScrollY]);
 
   const mobileMenuVariants = {
     hidden: { x: '100%', transition: { type: 'spring', stiffness: 300, damping: 30 } },
@@ -35,9 +53,8 @@ const Navbar = ({ isLoggedIn, onLoginClick, onLogoutClick, userName }) => {
     <>
       {/* White glass navbar */}
       <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
+        animate={{ y: showNav ? 0 : -100 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
         className="fixed top-4 left-4 right-4 z-50 rounded-4xl shadow-lg transform translate-y-2
                    bg-white/90 backdrop-blur-xl border border-black/10 "
       >
@@ -161,8 +178,8 @@ const Navbar = ({ isLoggedIn, onLoginClick, onLogoutClick, userName }) => {
                   <motion.div custom={2} variants={listItemVariants} initial="hidden" animate="visible">
                     <button
                       onClick={() => { onLoginClick(); setMobileMenuOpen(false); }}
-                      className="bg-[#7E69AB] text-white px-8 py-4 rounded-full text-xl font-semibold
-                                 hover:bg-[#5f4a96] hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+                      className="bg-purple-600 text-white px-8 py-4 rounded-full text-xl font-semibold
+                                 hover:bg-purple-800 hover:shadow-lg transform hover:scale-105 transition-all duration-300"
                     >
                       Get Started
                     </button>
