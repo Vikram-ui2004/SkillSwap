@@ -318,17 +318,29 @@ const PopularSkillsSection = () => (
 );
 
 const TestimonialsSection = () => {
-    // Mock data, in a real app this would be fetched
-    const testimonials = [
-        { name: "Sarah J.", role: "Web Developer", text: "SkillSwap helped me finally understand advanced JavaScript concepts. My mentor was patient and incredibly knowledgeable!" },
-        { name: "Mike R.", role: "Music Producer", text: "I swapped my guitar skills for music production lessons. It's been an amazing and affordable way to learn." },
-        { name: "Chen L.", role: "Graphic Designer", text: "The community is so supportive. I've not only learned new design software but also made some great friends." },
-        { name: "David K.", role: "Student", text: "As a student on a budget, this platform is a game-changer. I'm learning to code from a senior engineer for free!" },
-        { name: "Emily W.", role: "Photographer", text: "I taught basic photography and in return, I learned how to build my own portfolio website. Absolutely incredible." },
-        { name: "Alex G.", role: "Marketing Pro", text: "The perfect platform to sharpen my public speaking skills with a seasoned professional. Highly recommended!" },
-    ];
+  
+    // const testimonials = [
+    //     { name: "Sarah J.", role: "Web Developer", text: "SkillSwap helped me finally understand advanced JavaScript concepts. My mentor was patient and incredibly knowledgeable!" },
+    //     { name: "Mike R.", role: "Music Producer", text: "I swapped my guitar skills for music production lessons. It's been an amazing and affordable way to learn." },
+    //     { name: "Chen L.", role: "Graphic Designer", text: "The community is so supportive. I've not only learned new design software but also made some great friends." },
+    //     { name: "David K.", role: "Student", text: "As a student on a budget, this platform is a game-changer. I'm learning to code from a senior engineer for free!" },
+    //     { name: "Emily W.", role: "Photographer", text: "I taught basic photography and in return, I learned how to build my own portfolio website. Absolutely incredible." },
+    //     { name: "Alex G.", role: "Marketing Pro", text: "The perfect platform to sharpen my public speaking skills with a seasoned professional. Highly recommended!" },
+    // ];
     
-    // Duplicate testimonials for a seamless loop
+  const [testimonials, setTestimonials] = useState([]);
+
+  const fetchTestimonials = () => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/testimonials`)
+      .then((res) => res.json())
+      .then((data) => setTestimonials(data))
+      .catch((err) => console.error("Error fetching testimonials:", err));
+  };
+
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
+
     const duplicatedTestimonials = [...testimonials, ...testimonials];
 
     return (

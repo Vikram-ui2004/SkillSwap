@@ -11,5 +11,14 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
-  base: '/', // 👈 important for correct routing
-})
+  base: '/', 
+    server: {
+    proxy: {
+      '/api': {
+        target: 'https://skillswap-backend-6jha.onrender.com',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },// 👈 important for correct routing
+});
