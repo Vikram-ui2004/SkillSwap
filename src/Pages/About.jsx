@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Zap, Users, ShieldCheck, HeartHandshake } from "lucide-react";
 import NET from "vanta/dist/vanta.net.min.js";
 import * as THREE from "three";
-import { cn } from "../lib/utils"; // Make sure this path is correct
+import { cn } from "../lib/utils";
 
 // --- Placeholder Images ---
 import teamMember1 from "../assets/svg1.svg";
@@ -31,6 +31,7 @@ const VantaBackground = ({ children }) => {
   const vantaRef = useRef(null);
   const [vantaEffect, setVantaEffect] = useState(null);
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const isTablet = useMediaQuery("(max-width: 1024px)");
 
   useEffect(() => {
     if (!vantaEffect) {
@@ -45,23 +46,27 @@ const VantaBackground = ({ children }) => {
           minWidth: 200.0,
           scale: 1.0,
           scaleMobile: 1.0,
-          // RESTORED: High-contrast colors for readability
+          // Reduced density settings for better text visibility
           color: 0x7e69ab,
-          backgroundColor: 0x6a329f,
-          // RESPONSIVE: Simpler settings on mobile for better performance
-          points: isMobile ? 8.00 : 12.00,
-          maxDistance: isMobile ? 20.00 : 25.00,
-          spacing: isMobile ? 18.00 : 20.00,
+          backgroundColor: 0x1a1447, // Darker background for better contrast
+          // Significantly reduced density based on device
+          points: isMobile ? 5.00 : isTablet ? 6.00 : 8.00,
+          maxDistance: isMobile ? 14.00 : isTablet ? 15.00 : 18.00,
+          spacing: isMobile ? 24.00 : isTablet ? 22.00 : 20.00,
+          // Reduced line opacity for less visual interference
+          lineOpacity: isMobile ? 0.3 : 0.4,
         })
       );
     }
     return () => {
       if (vantaEffect) vantaEffect.destroy();
     };
-  }, [vantaEffect, isMobile]);
+  }, [vantaEffect, isMobile, isTablet]);
 
   return (
     <div ref={vantaRef} className="relative w-full">
+      {/* Add overlay for better text contrast */}
+      <div className="absolute inset-0 bg-black/20 z-0"></div>
       {children}
     </div>
   );
@@ -70,23 +75,26 @@ const VantaBackground = ({ children }) => {
 // --- Hero Section ---
 const AboutHero = () => (
   <section className="h-screen flex flex-col justify-center items-center text-center px-4 sm:px-6">
-    <div className="relative z-10 max-w-4xl mx-auto">
+    {/* Increased z-index and added background for better text visibility */}
+    <div className="relative z-20 max-w-4xl mx-auto">
+      {/* Added text shadow and background for better readability */}
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeInOut" }}
-        // RESPONSIVE: Adjusted font sizes for all screens
-        className="text-4xl sm:text-6xl md:text-7xl font-extrabold leading-tight text-white"
+        className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight text-white drop-shadow-2xl"
+        style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.7)' }}
       >
         We're Building The <br />
-        <span className="text-purple-300">Future of Learning</span>.
+        <span className="text-purple-200">Future of Learning</span>.
       </motion.h1>
+      
       <motion.p
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.3, ease: "easeInOut" }}
-        // RESPONSIVE: Adjusted font sizes and restored readable color
-        className="mt-6 text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed"
+        className="mt-6 text-sm sm:text-base md:text-lg lg:text-xl text-gray-100 max-w-3xl mx-auto leading-relaxed drop-shadow-lg bg-black/30 backdrop-blur-sm rounded-lg p-4 sm:p-6"
+        style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.7)' }}
       >
         We believe that knowledge is the one thing that grows when you share it. Our mission is to build a global community where anyone can learn anything, directly from another person.
       </motion.p>
@@ -97,7 +105,7 @@ const AboutHero = () => (
 // --- Our Story Section (Sticky Scroll) ---
 const storyContent = [
     { title: "The Spark of an Idea", description: "SkillSwap was born from a simple realization: everyone is an expert at something, and everyone is a beginner at something else. Traditional learning can be rigid, expensive, and impersonal. We envisioned a world where the line between teacher and student blurs, where learning is as easy as starting a conversation." },
-    { title: "Building the Bridge", description: "We set out to create a platform that removes barriers, connecting people based on their passions and curiosities. It’s not just about the code; it's about the human connection forged through a shared desire for growth." },
+    { title: "Building the Bridge", description: "We set out to create a platform that removes barriers, connecting people based on their passions and curiosities. It's not just about the code; it's about the human connection forged through a shared desire for growth." },
     { title: "Our Vision for Tomorrow", description: "Today, we're proud to have connected thousands of learners and teachers. But our journey is just beginning. We are continuously innovating, driven by the belief that collaborative learning can unlock human potential on a global scale." },
 ];
 
@@ -122,9 +130,6 @@ const OurStorySection = () => {
             animate={{ backgroundColor: backgroundColors[activeCard] || backgroundColors[0] }}
             className="relative transition-colors duration-500"
         >
-            {/* RESPONSIVE: The entire structure is now responsive.
-                On desktop (lg): A two-column grid with a sticky title and scrolling cards.
-                On mobile: A simple single-column flex layout that stacks naturally. */}
             <div
                 ref={ref}
                 className="max-w-7xl mx-auto flex flex-col lg:grid lg:grid-cols-2 gap-10 py-16 sm:py-24 px-4 sm:px-8 lg:h-[300vh]"
@@ -157,7 +162,6 @@ const OurStorySection = () => {
     );
 };
 
-
 // --- Values Section (Bento Grid) ---
 const ValueCard = ({ icon, title, description, className }) => (
     <div className={cn("bg-white/70 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-black/5 shadow-lg flex flex-col justify-center items-center text-center", className)}>
@@ -174,7 +178,6 @@ const OurValuesSection = () => (
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1f2040] mb-4">What Drives Us</h2>
                 <p className="text-base sm:text-lg text-[#4b546e]">Our core values are the compass that guides every feature we build.</p>
             </div>
-            {/* RESPONSIVE: Grid is already responsive, but gap is adjusted for mobile */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                 <ValueCard className="md:col-span-1" icon={<Users size={32} />} title="Community First" description="We thrive on connection, fostering a supportive and collaborative environment for all members." />
                 <ValueCard className="md:col-span-2" icon={<HeartHandshake size={32} />} title="Empowerment" description="We empower individuals by providing the tools to both teach and learn, unlocking potential and building confidence across the globe." />
@@ -185,14 +188,13 @@ const OurValuesSection = () => (
     </section>
 );
 
-
 // --- Team Section with 3D Card Effect ---
 const TeamCard = ({ image, name, role }) => {
     const ref = useRef(null);
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
     const handleMouseMove = (e) => {
-        if (!ref.current || !isDesktop) return; // RESPONSIVE: Effect only runs on desktop
+        if (!ref.current || !isDesktop) return;
         const { left, top, width, height } = ref.current.getBoundingClientRect();
         const x = (e.clientX - left - width / 2) / 25;
         const y = (e.clientY - top - height / 2) / 25;
@@ -222,7 +224,6 @@ const MeetTheTeamSection = () => (
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1f2040] mb-12 sm:mb-16">
                 The People Behind the Platform
             </h2>
-            {/* RESPONSIVE: Grid now adapts better to tablet sizes (sm) before the desktop (lg) view */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8">
                 <TeamCard image={teamMember1} name="Alex Johnson" role="Founder & CEO" />
                 <TeamCard image={teamMember2} name="Maria Garcia" role="Lead Developer" />
@@ -250,7 +251,6 @@ const CtaSection = () => {
           whileHover={{ scale: 1.05, boxShadow: "0px 10px 30px rgba(126, 105, 171, 0.4)" }}
           whileTap={{ scale: 0.95 }}
           onClick={handleJoinClick}
-          // RESPONSIVE: Button padding adjusted for smaller screens
           className="px-8 py-4 sm:px-10 sm:py-5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full text-lg sm:text-xl font-semibold tracking-wide shadow-lg"
         >
           Start Your Journey
