@@ -1,23 +1,27 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import AuthModal from '../components/AuthModal'; // Make sure this path is correct
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import AuthModal from "../components/AuthModal";
 
-const AuthPage = ({ mode, onAuth, onSwitchMode }) => {
+const AuthPage = ({ mode, onSwitchMode }) => {
   const navigate = useNavigate();
 
-  // When the modal is closed from this page, navigate the user to the homepage.
+  // ✅ Close modal → go back to home
   const handleClose = () => {
-    navigate('/');
+    navigate("/");
+  };
+
+  // ✅ When auth succeeds → go to dashboard
+  const handleAuthSuccess = () => {
+    navigate("/dashboard");
   };
 
   return (
-    // You can style this div to be a background for your modal
     <div className="w-full h-full">
-      <AuthModal 
+      <AuthModal
         mode={mode}
-        onAuth={onAuth}
         onSwitchMode={onSwitchMode}
-        onClose={handleClose} // Use the new navigate handler
+        onClose={handleClose}
+        onAuthSuccess={handleAuthSuccess} // 🔑 pass this down
       />
     </div>
   );

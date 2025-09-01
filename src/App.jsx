@@ -11,33 +11,24 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authMode, setAuthMode] = useState('login');
   const [currentUser, setCurrentUser] = useState(null);
-  
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 1. Add '/dashboard' to a list of paths without the layout
   const pathsWithoutLayout = ['/auth', '/dashboard'];
-
-  // 2. Update the condition to check the array
-  const hideLayout = pathsWithoutLayout.includes(location.pathname) || (location.pathname === '/' && isLoggedIn);
-
-  const [availableSkills] = useState([
-    { id: 1, name: 'JavaScript Programming', teacher: 'Alex Chen', rating: 4.9, students: 150, image: '👨‍💻' },
-    { id: 2, name: 'Digital Art & Design', teacher: 'Sarah Kim', rating: 4.8, students: 89, image: '🎨' },
-    { id: 3, name: 'Spanish Language', teacher: 'Maria Rodriguez', rating: 4.7, students: 200, image: '🌎' },
-    { id: 4, name: 'Guitar Playing', teacher: 'John Smith', rating: 4.9, students: 75, image: '🎸' },
-  ]);
+  const hideLayout =
+    pathsWithoutLayout.includes(location.pathname) ||
+    (location.pathname === '/' && isLoggedIn);
 
   const handleLogin = (formData) => {
     const userData = {
       name: formData.name || 'Jane Doe',
       email: formData.email,
-      skills: ['React Development', 'UI/UX Design']
+      skills: ['React Development', 'UI/UX Design'],
     };
     setCurrentUser(userData);
     setIsLoggedIn(true);
-    // You might want to navigate to the explicit '/dashboard' route here
-    navigate('/dashboard'); 
+    navigate('/dashboard');
   };
 
   const handleLogout = () => {
@@ -45,7 +36,7 @@ function App() {
     setIsLoggedIn(false);
     navigate('/');
   };
-  
+
   const openAuthPage = () => {
     setAuthMode('login');
     navigate('/auth');
@@ -53,7 +44,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
-      {/* The rendering logic here doesn't need to change */}
       {!hideLayout && (
         <Navbar
           isLoggedIn={isLoggedIn}
@@ -69,15 +59,17 @@ function App() {
             path="/"
             element={
               isLoggedIn ? (
-                // Redirecting to /dashboard if logged in is often a clearer pattern
-                <Dashboard currentUser={currentUser} availableSkills={availableSkills} />
+                <Dashboard currentUser={currentUser} />
               ) : (
                 <HomePage onGetstartedClick={openAuthPage} />
               )
             }
           />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/dashboard" element={<Dashboard currentUser={currentUser} availableSkills={availableSkills} />} />
+          <Route
+            path="/dashboard"
+            element={<Dashboard currentUser={currentUser} />}
+          />
           <Route
             path="/auth"
             element={
