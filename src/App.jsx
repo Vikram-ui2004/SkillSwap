@@ -48,7 +48,7 @@ function App() {
         <Navbar
           isLoggedIn={isLoggedIn}
           onLoginClick={openAuthPage}
-          onLogoutClick={handleLogout}
+          onLogout={handleLogout}
           userName={currentUser?.name}
         />
       )}
@@ -59,7 +59,7 @@ function App() {
             path="/"
             element={
               isLoggedIn ? (
-                <Dashboard currentUser={currentUser} />
+                <Dashboard currentUser={currentUser} onLogout={handleLogout} />
               ) : (
                 <HomePage onGetstartedClick={openAuthPage} />
               )
@@ -68,7 +68,7 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route
             path="/dashboard"
-            element={<Dashboard currentUser={currentUser} />}
+            element={<Dashboard currentUser={currentUser} onLogout={handleLogout}  />}
           />
           <Route
             path="/auth"
