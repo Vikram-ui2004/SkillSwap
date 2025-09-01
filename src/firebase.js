@@ -6,13 +6,13 @@ import { getStorage } from "firebase/storage";
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDNDzK1N4Ax9KR2XCthofDI_Mco5JU9jwg",
-  authDomain: "skillswap-69646.firebaseapp.com",
-  projectId: "skillswap-69646",
-  storageBucket: "skillswap-69646.firebasestorage.app",
-  messagingSenderId: "851253196428",
-  appId: "1:851253196428:web:2a4a37a1f53594e1aeada9",
-  measurementId: "G-ZKRK1RMWFH"
+  apiKey: import.meta.env.VITE_APIKEY, 
+  authDomain: import.meta.env.VITE_AUTHDOMAIN,  
+  projectId: import.meta.env.VITE_PROJECTID, 
+  storageBucket: import.meta.env.VITE_STORAGEBUCKET, 
+  messagingSenderId: import.meta.env.VITE_MESSAGINGSENDERID, 
+  appId:  import.meta.env.VITE_APPID ,
+  measurementId: import.meta.env.VITE_MEASUREMENTID ,
 };
 
 // Initialize Firebase
