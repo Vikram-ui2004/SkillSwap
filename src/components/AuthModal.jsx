@@ -11,7 +11,8 @@ import {
 } from "firebase/auth";
 import { toast } from "react-toastify"; // optional for nice alerts
 import "react-toastify/dist/ReactToastify.css";
-import purplelogo from "../assets/purple-logo.png"; // 
+import purplelogo from "../assets/purple-logo.png"; 
+import Social from "../assets/social.svg";
 
 // Enhanced Google Icon (same as before)
 const GoogleIcon = () => (
@@ -200,7 +201,7 @@ const MobileBackgroundEffects = () => {
 // Keep your original illustration
 const Illustration = () => (
   <motion.img
-    src="../src/assets/social.svg"
+    src={Social}
     alt="Illustration"
     className="w-full max-w-lg mx-auto"
     initial={{ opacity: 0, scale: 0.8 }}
