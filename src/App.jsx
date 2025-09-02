@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from './firebase'; // make sure you export auth from firebase.js
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './Pages/HomePage';
@@ -8,48 +10,37 @@ import AboutPage from './Pages/About';
 import AuthPage from './Pages/Auth';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [authMode, setAuthMode] = useState('login');
   const [currentUser, setCurrentUser] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Track Firebase auth state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const pathsWithoutLayout = ['/auth', '/dashboard'];
   const hideLayout =
     pathsWithoutLayout.includes(location.pathname) ||
-    (location.pathname === '/' && isLoggedIn);
+    (location.pathname === '/' && currentUser);
 
-  const handleLogin = (formData) => {
-    const userData = {
-      name: formData.name || 'Jane Doe',
-      email: formData.email,
-      skills: ['React Development', 'UI/UX Design'],
-    };
-    setCurrentUser(userData);
-    setIsLoggedIn(true);
-    navigate('/dashboard');
-  };
-
-  const handleLogout = () => {
-    setCurrentUser(null);
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await signOut(auth);
     navigate('/');
-  };
-
-  const openAuthPage = () => {
-    setAuthMode('login');
-    navigate('/auth');
   };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
       {!hideLayout && (
         <Navbar
-          isLoggedIn={isLoggedIn}
-          onLoginClick={openAuthPage}
+          isLoggedIn={!!currentUser}
+          onLoginClick={() => navigate('/auth')}
           onLogout={handleLogout}
-          userName={currentUser?.name}
+          userName={currentUser?.displayName || currentUser?.email}
         />
       )}
 
@@ -58,28 +49,19 @@ function App() {
           <Route
             path="/"
             element={
-              isLoggedIn ? (
+              currentUser ? (
                 <Dashboard currentUser={currentUser} onLogout={handleLogout} />
               ) : (
-                <HomePage onGetstartedClick={openAuthPage} />
+                <HomePage onGetstartedClick={() => navigate('/auth')} />
               )
             }
           />
           <Route path="/about" element={<AboutPage />} />
           <Route
             path="/dashboard"
-            element={<Dashboard currentUser={currentUser} onLogout={handleLogout}  />}
+            element={<Dashboard currentUser={currentUser} onLogout={handleLogout} />}
           />
-          <Route
-            path="/auth"
-            element={
-              <AuthPage
-                mode={authMode}
-                onAuth={handleLogin}
-                onSwitchMode={(newMode) => setAuthMode(newMode)}
-              />
-            }
-          />
+          <Route path="/auth" element={<AuthPage />} />
         </Routes>
       </main>
 
