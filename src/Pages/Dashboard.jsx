@@ -1,5 +1,8 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
 import {
   User,
   BookOpen,
@@ -19,9 +22,235 @@ import {
   Bell,
   ShieldCheck,
   Star,
+  Home,
+  Grid3X3,
+  MessageSquare,
+  Users,
+  Menu,
+  Calendar,
+  Target,
+  Clock,
+  MessageCircle
 } from "lucide-react";
 
-// --- Dashboard Components ---
+// Enhanced Navbar Component (Same as SkillListings)
+const DashboardNavbar = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/auth');
+  };
+
+  const navItems = [
+    { name: 'Dashboard', icon: Home, path: '/dashboard', active: true },
+    { name: 'Skills', icon: Grid3X3, path: '/skills' },
+    { name: 'Messages', icon: MessageSquare, path: '/messages' },
+    { name: 'Community', icon: Users, path: '/community' },
+  ];
+
+  return (
+    <>
+      <motion.nav
+        className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-lg border-b border-purple-200/20"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, type: "spring" }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <motion.div 
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() => navigate('/dashboard')}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <BookOpen className="text-purple-600" size={28} />
+              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                SkillSwap
+              </span>
+            </motion.div>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-2">
+              {navItems.map((item) => (
+                <motion.button
+                  key={item.name}
+                  onClick={() => navigate(item.path)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
+                    item.active
+                      ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20'
+                  }`}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <item.icon size={18} />
+                  <span>{item.name}</span>
+                  {item.active && (
+                    <div className="w-2 h-2 bg-purple-500 rounded-full" />
+                  )}
+                </motion.button>
+              ))}
+            </nav>
+
+            {/* Right Side Actions */}
+            <div className="flex items-center gap-4">
+              {/* Notifications */}
+              <motion.button
+                className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 
+                           hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-all duration-300"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Bell size={22} />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
+              </motion.button>
+
+              {/* User Menu - Desktop */}
+              <div className="hidden md:flex items-center gap-3">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    {user?.displayName || user?.email?.split('@')[0]}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Teacher & Learner</p>
+                </div>
+                <motion.img
+                  src={user?.photoURL || "https://placehold.co/40x40/7E69AB/FFFFFF?text=U"}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full border-2 border-purple-200 cursor-pointer"
+                  whileHover={{ scale: 1.1 }}
+                  onClick={() => navigate('/dashboard')}
+                />
+                <motion.button
+                  onClick={handleLogout}
+                  className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-500 
+                           hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all duration-300"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <LogOut size={18} />
+                </motion.button>
+              </div>
+
+              {/* Mobile Menu Button */}
+              <motion.button
+                onClick={() => setShowMobileMenu(true)}
+                className="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-purple-600 
+                           hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-all duration-300"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Menu size={24} />
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {showMobileMenu && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 md:hidden"
+              onClick={() => setShowMobileMenu(false)}
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 w-80 bg-white dark:bg-gray-900 z-50 md:hidden 
+                         shadow-2xl border-l border-purple-200/20"
+            >
+              {/* Mobile Menu Header */}
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Dashboard Menu</h2>
+                  <button
+                    onClick={() => setShowMobileMenu(false)}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+                <div className="flex items-center gap-3">
+                  <img
+                    src={user?.photoURL || "https://placehold.co/40x40/7E69AB/FFFFFF?text=U"}
+                    alt="Profile"
+                    className="w-12 h-12 rounded-full border-2 border-purple-200"
+                  />
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {user?.displayName || user?.email?.split('@')[0]}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {user?.email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile Navigation Items */}
+              <div className="p-6">
+                <nav className="space-y-2">
+                  {navItems.map((item, index) => (
+                    <motion.button
+                      key={item.name}
+                      onClick={() => {
+                        navigate(item.path);
+                        setShowMobileMenu(false);
+                      }}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ${
+                        item.active
+                          ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      }`}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <item.icon size={20} />
+                      <span className="font-medium">{item.name}</span>
+                      {item.active && (
+                        <div className="ml-auto w-2 h-2 bg-purple-500 rounded-full" />
+                      )}
+                    </motion.button>
+                  ))}
+                </nav>
+
+                <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+                  <motion.button
+                    onClick={() => {
+                      handleLogout();
+                      setShowMobileMenu(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 dark:text-red-400 
+                             hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300"
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <LogOut size={20} />
+                    <span className="font-medium">Logout</span>
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+// Enhanced Modal Component
 const Modal = ({ children, onClose }) => (
   <AnimatePresence>
     <motion.div
@@ -35,7 +264,7 @@ const Modal = ({ children, onClose }) => (
         initial={{ scale: 0.9, opacity: 0, y: 30 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 30 }}
-        className="bg-white/95 dark:bg-gray-800/95 rounded-2xl shadow-xl w-full max-w-md"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -44,26 +273,48 @@ const Modal = ({ children, onClose }) => (
   </AnimatePresence>
 );
 
+// Enhanced Stat Card
 const StatCard = ({ stat }) => (
-  <div className="bg-white/70 dark:bg-white/10 backdrop-blur-sm p-5 rounded-2xl border border-black/5 text-center shadow-sm flex flex-col items-center justify-center h-full">
-    <div className="w-12 h-12 mb-4 rounded-full flex items-center justify-center bg-[#7E69AB]/15 text-[#3B1E54] dark:text-purple-300">
+  <motion.div 
+    className="bg-white/70 dark:bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-black/5 
+               text-center shadow-sm hover:shadow-lg transition-all duration-300 h-full flex flex-col 
+               justify-center hover:scale-105 group"
+    whileHover={{ y: -5 }}
+  >
+    <motion.div 
+      className="w-16 h-16 mb-4 mx-auto rounded-2xl flex items-center justify-center 
+                 bg-[#7E69AB]/15 text-[#3B1E54] dark:text-purple-300 group-hover:scale-110 transition-transform"
+      whileHover={{ rotate: 360 }}
+      transition={{ duration: 0.6 }}
+    >
       {stat.icon}
-    </div>
-    <p className="text-3xl font-bold text-[#1f2040] dark:text-white">
+    </motion.div>
+    <p className="text-3xl font-bold text-[#1f2040] dark:text-white mb-2">
       {stat.value}
     </p>
-    <p className="text-sm text-[#4b546e] dark:text-gray-300 mt-1">
+    <p className="text-sm text-[#4b546e] dark:text-gray-300 font-medium">
       {stat.label}
     </p>
-  </div>
+  </motion.div>
 );
 
+// Enhanced Skill Management Card
 const SkillManagementCard = ({ title, skills, onAdd, onRemove }) => (
-  <div className="bg-white/70 dark:bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-black/5 shadow-sm h-full flex flex-col">
-    <h3 className="text-xl font-bold text-[#1f2040] dark:text-white mb-4">
-      {title}
-    </h3>
-    <div className="flex-grow overflow-y-auto pr-2 -mr-2">
+  <motion.div 
+    className="bg-white/70 dark:bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-black/5 
+               shadow-sm h-full flex flex-col hover:shadow-lg transition-all duration-300"
+    whileHover={{ scale: 1.02 }}
+  >
+    <div className="flex items-center gap-3 mb-6">
+      <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-xl">
+        <Target className="text-purple-600 dark:text-purple-400" size={20} />
+      </div>
+      <h3 className="text-xl font-bold text-[#1f2040] dark:text-white">
+        {title}
+      </h3>
+    </div>
+    
+    <div className="flex-grow overflow-y-auto pr-2 -mr-2 mb-4">
       {skills.length > 0 ? (
         <ul className="space-y-3">
           {skills.map((skill, index) => (
@@ -74,49 +325,71 @@ const SkillManagementCard = ({ title, skills, onAdd, onRemove }) => (
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 10 }}
               transition={{ duration: 0.3 }}
-              className="flex justify-between items-center bg-purple-50 dark:bg-purple-900/50 p-3 rounded-lg"
+              className="flex justify-between items-center bg-purple-50 dark:bg-purple-900/50 p-3 rounded-lg
+                         hover:shadow-md transition-all"
             >
-              <span className="text-base text-[#3B1E54] dark:text-purple-200 font-medium">
+              <span className="text-base text-[#3B1E54] dark:text-purple-200 font-medium flex items-center gap-2">
+                <div className="w-2 h-2 bg-purple-500 rounded-full" />
                 {skill}
               </span>
-              <button
+              <motion.button
                 onClick={() => onRemove(skill)}
-                className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                className="p-1 text-gray-400 hover:text-red-500 dark:hover:text-red-400 
+                           hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-300"
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
               >
-                <X size={18} />
-              </button>
+                <X size={16} />
+              </motion.button>
             </motion.li>
           ))}
         </ul>
       ) : (
-        <div className="text-center text-gray-400 dark:text-gray-500 py-6">
-          No skills added yet.
+        <div className="text-center text-gray-400 dark:text-gray-500 py-8">
+          <div className="text-4xl mb-2">📚</div>
+          <p>No skills added yet.</p>
         </div>
       )}
     </div>
-    <button
+    
+    <motion.button
       onClick={onAdd}
-      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-purple-100 dark:bg-purple-800/60 text-[#3B1E54] dark:text-purple-100 font-semibold rounded-lg hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors duration-300 mt-4"
+      className="w-full flex items-center justify-center gap-2 py-3 px-4 
+                 bg-purple-100 dark:bg-purple-800/60 text-[#3B1E54] dark:text-purple-100 
+                 font-semibold rounded-lg hover:bg-purple-200 dark:hover:bg-purple-800 
+                 transition-colors duration-300"
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
     >
       <PlusCircle size={20} />
       Add New Skill
-    </button>
-  </div>
+    </motion.button>
+  </motion.div>
 );
 
+// Enhanced Upcoming Session Card
 const UpcomingSessionCard = ({ session }) => (
-  <div className="bg-white/80 dark:bg-gray-800/50 p-4 rounded-xl shadow-md border border-black/5 flex items-center gap-4">
-    <div
-      className={`w-12 h-12 rounded-lg text-white flex items-center justify-center font-bold ${
+  <motion.div 
+    className="bg-white/80 dark:bg-gray-800/50 p-4 rounded-xl shadow-md border border-black/5 
+               flex items-center gap-4 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+    whileHover={{ x: 5 }}
+  >
+    <motion.div
+      className={`w-12 h-12 rounded-lg text-white flex items-center justify-center font-bold shadow-lg ${
         session.type === "learn" ? "bg-indigo-500" : "bg-green-500"
       }`}
+      whileHover={{ rotate: 360, scale: 1.1 }}
+      transition={{ duration: 0.6 }}
     >
       <User size={24} />
-    </div>
-    <div>
-      <p className="font-bold text-gray-500 dark:text-gray-400 text-sm">
-        {session.date}
-      </p>
+    </motion.div>
+    <div className="flex-1">
+      <div className="flex items-center gap-2 mb-1">
+        <Clock size={14} className="text-gray-500" />
+        <p className="font-bold text-gray-500 dark:text-gray-400 text-sm">
+          {session.date}
+        </p>
+      </div>
       <h4 className="font-bold text-[#1f2040] dark:text-white">
         {session.skill}
       </h4>
@@ -126,33 +399,36 @@ const UpcomingSessionCard = ({ session }) => (
           : `teaching ${session.with}`}
       </p>
     </div>
-  </div>
+  </motion.div>
 );
 
-const Dashboard = ({ onLogout }) => {
-  // --- State Management ---
+// Main Dashboard Component
+const Dashboard = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [currentUser, setCurrentUser] = useState({
-    name: "Aarav",
+    name: user?.displayName || user?.email?.split('@')[0] || "User",
     bio: "React developer passionate about sharing knowledge and learning new design skills.",
-    profilePicture: "https://placehold.co/128x128/7E69AB/FFFFFF?text=A",
+    profilePicture: user?.photoURL || "https://placehold.co/128x128/7E69AB/FFFFFF?text=U",
     socials: {
-      github: "aarav-dev",
-      linkedin: "aarav-sharma",
-      twitter: "aaravcodes",
-      email: "aarav@example.com",
+      github: "your-github",
+      linkedin: "your-linkedin", 
+      twitter: "your-twitter",
+      email: user?.email || "user@example.com",
     },
     interests: ["Photography", "Hiking", "Sci-Fi Movies", "Cooking"],
   });
 
   const [userStats] = useState([
-    { value: "120", label: "SkillCoins", icon: <Award size={24} /> },
-    { value: "15", label: "Sessions Done", icon: <Zap size={24} /> },
-    { value: "5", label: "Reviews", icon: <Star size={24} /> },
+    { value: "240", label: "SkillCoins", icon: <Award size={24} /> },
+    { value: "28", label: "Sessions Done", icon: <Zap size={24} /> },
+    { value: "4.9", label: "Rating", icon: <Star size={24} /> },
   ]);
 
   const [skillsToTeach, setSkillsToTeach] = useState([
     "React",
-    "JavaScript",
+    "JavaScript", 
     "Tailwind CSS",
   ]);
   const [skillsToLearn, setSkillsToLearn] = useState([
@@ -177,9 +453,9 @@ const Dashboard = ({ onLogout }) => {
   ]);
 
   const achievements = [
-    { icon: <ShieldCheck />, label: "Verified Teacher" },
-    { icon: <Star />, label: "Top Learner" },
-    { icon: <Zap />, label: "10+ Sessions" },
+    { icon: <ShieldCheck size={20} />, label: "Verified Teacher" },
+    { icon: <Star size={20} />, label: "Top Learner" },
+    { icon: <Zap size={20} />, label: "10+ Sessions" },
   ];
 
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -188,7 +464,7 @@ const Dashboard = ({ onLogout }) => {
   const [profileForm, setProfileForm] = useState(currentUser);
   const fileInputRef = useRef(null);
 
-  // --- Event Handlers ---
+  // Event Handlers
   const handleProfileFormChange = (e) => {
     const { name, value } = e.target;
     if (name.includes(".")) {
@@ -237,56 +513,23 @@ const Dashboard = ({ onLogout }) => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[radial-gradient(1200px_800px_at_100%_20%,#dbe7ff_0%,transparent_60%),radial-gradient(900px_620px_at_0%_90%,#f3e8ff_0%,transparent_55%),linear-gradient(180deg,#ffffff_0%,#f0f4ff_40%,#f5ecff_100%)] dark:bg-gray-900 text-[#2d2d44] dark:text-gray-200 font-sans">
-      <header className="sticky top-0 z-40 bg-white/70 dark:bg-gray-900/70 backdrop-blur-lg shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-2">
-              <BookOpen className="text-purple-600" />
-              <span className="text-xl font-bold text-gray-800 dark:text-white">
-                SkillSwap
-              </span>
-            </div>
-            <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-gray-600 dark:text-gray-300">
-              <a href="#" className="hover:text-purple-600">
-                Dashboard
-              </a>
-              <a href="#" className="hover:text-purple-600">
-                Matchmaking
-              </a>
-              <a href="#" className="hover:text-purple-600">
-                Messages
-              </a>
-              <a href="#" className="hover:text-purple-600">
-                Community
-              </a>
-            </nav>
-            <div className="flex items-center gap-4">
-              <button className="text-gray-500 hover:text-purple-600">
-                <Bell size={20} />
-              </button>
-              <button
-                onClick={onLogout}
-                className="text-gray-500 hover:text-purple-600"
-              >
-                <LogOut size={20} />
-              </button>
-              <img
-                src={currentUser.profilePicture}
-                alt="User"
-                className="w-8 h-8 rounded-full"
-              />
-            </div>
-          </div>
-        </div>
-      </header>
-      <main className="p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen w-full bg-gradient-to-br from-purple-50 via-white to-indigo-50 
+                    dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950 text-[#2d2d44] dark:text-gray-200 font-sans">
+      
+      {/* Enhanced Navbar */}
+      <DashboardNavbar />
+      
+      {/* Main Content with top padding */}
+      <main className="pt-20 p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
+          
+          {/* Enhanced Profile Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mb-8 p-6 bg-white/60 dark:bg-white/10 backdrop-blur-lg rounded-3xl shadow-md border border-black/5 flex flex-col md:flex-row items-center gap-6"
+            className="mb-8 p-6 bg-white/60 dark:bg-white/10 backdrop-blur-lg rounded-3xl shadow-md border border-black/5 
+                       flex flex-col md:flex-row items-center gap-6"
           >
             <div className="relative group">
               <img
@@ -343,8 +586,14 @@ const Dashboard = ({ onLogout }) => {
               <Settings size={18} /> Edit Profile
             </motion.button>
           </motion.div>
+
+          {/* Dashboard Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            
+            {/* Left Column - Sessions & Achievements */}
             <div className="lg:col-span-1 xl:col-span-1 flex flex-col gap-6">
+              
+              {/* Upcoming Sessions */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -364,6 +613,8 @@ const Dashboard = ({ onLogout }) => {
                   </div>
                 </div>
               </motion.div>
+              
+              {/* Achievements */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -391,7 +642,11 @@ const Dashboard = ({ onLogout }) => {
                 </div>
               </motion.div>
             </div>
+
+            {/* Center Column - CTA & Skills */}
             <div className="lg:col-span-2 xl:col-span-2 flex flex-col gap-6">
+              
+              {/* Call to Action Card */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -406,11 +661,14 @@ const Dashboard = ({ onLogout }) => {
                 <motion.button
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate('/skills')}
                   className="bg-white text-purple-600 font-bold py-3 px-8 rounded-full flex items-center gap-2 shadow-xl"
                 >
                   <Search size={20} /> Find a Match
                 </motion.button>
               </motion.div>
+              
+              {/* Skills Management */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
@@ -438,6 +696,8 @@ const Dashboard = ({ onLogout }) => {
                 </motion.div>
               </div>
             </div>
+
+            {/* Right Column - Stats */}
             <div className="lg:col-span-3 xl:col-span-1 flex flex-col gap-6">
               {userStats.map((stat, index) => (
                 <motion.div
@@ -452,6 +712,8 @@ const Dashboard = ({ onLogout }) => {
             </div>
           </div>
         </div>
+
+        {/* Modals */}
         <AnimatePresence>
           {isEditingProfile && (
             <Modal onClose={() => setIsEditingProfile(false)}>
@@ -526,6 +788,7 @@ const Dashboard = ({ onLogout }) => {
               </form>
             </Modal>
           )}
+          
           {isAddingSkill && (
             <Modal onClose={() => setIsAddingSkill(null)}>
               <div className="p-6">
