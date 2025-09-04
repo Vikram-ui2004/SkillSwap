@@ -1,7 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { doc, getDoc, setDoc, updateDoc, onSnapshot } from "firebase/firestore";
+import { auth, db } from "../firebase";
+import { useAuth } from "../contexts/AuthContext";
+import debounce from "lodash.debounce";
+import DashboardNavbar from "../components/DashboardNavbar";
 
 import {
   User,
@@ -30,224 +34,14 @@ import {
   Calendar,
   Target,
   Clock,
-  MessageCircle
+  MessageCircle,
 } from "lucide-react";
 
-// Enhanced Navbar Component (Same as SkillListings)
-const DashboardNavbar = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-
-  const handleLogout = async () => {
-    await logout();
-    navigate('/auth');
-  };
-
-  const navItems = [
-    { name: 'Dashboard', icon: Home, path: '/dashboard', active: true },
-    { name: 'Skills', icon: Grid3X3, path: '/skills' },
-    { name: 'Messages', icon: MessageSquare, path: '/messages' },
-    { name: 'Community', icon: Users, path: '/community' },
-  ];
-
-  return (
-    <>
-      <motion.nav
-        className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-lg border-b border-purple-200/20"
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, type: "spring" }}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <motion.div 
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() => navigate('/dashboard')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <BookOpen className="text-purple-600" size={28} />
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                SkillSwap
-              </span>
-            </motion.div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-2">
-              {navItems.map((item) => (
-                <motion.button
-                  key={item.name}
-                  onClick={() => navigate(item.path)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
-                    item.active
-                      ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20'
-                  }`}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <item.icon size={18} />
-                  <span>{item.name}</span>
-                  {item.active && (
-                    <div className="w-2 h-2 bg-purple-500 rounded-full" />
-                  )}
-                </motion.button>
-              ))}
-            </nav>
-
-            {/* Right Side Actions */}
-            <div className="flex items-center gap-4">
-              {/* Notifications */}
-              <motion.button
-                className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 
-                           hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-all duration-300"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <Bell size={22} />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full" />
-              </motion.button>
-
-              {/* User Menu - Desktop */}
-              <div className="hidden md:flex items-center gap-3">
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    {user?.displayName || user?.email?.split('@')[0]}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Teacher & Learner</p>
-                </div>
-                <motion.img
-                  src={user?.photoURL || "https://placehold.co/40x40/7E69AB/FFFFFF?text=U"}
-                  alt="Profile"
-                  className="w-10 h-10 rounded-full border-2 border-purple-200 cursor-pointer"
-                  whileHover={{ scale: 1.1 }}
-                  onClick={() => navigate('/dashboard')}
-                />
-                <motion.button
-                  onClick={handleLogout}
-                  className="p-2 text-gray-600 dark:text-gray-300 hover:text-red-500 
-                           hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all duration-300"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <LogOut size={18} />
-                </motion.button>
-              </div>
-
-              {/* Mobile Menu Button */}
-              <motion.button
-                onClick={() => setShowMobileMenu(true)}
-                className="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-purple-600 
-                           hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-all duration-300"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <Menu size={24} />
-              </motion.button>
-            </div>
-          </div>
-        </div>
-      </motion.nav>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {showMobileMenu && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 md:hidden"
-              onClick={() => setShowMobileMenu(false)}
-            />
-            <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-80 bg-white dark:bg-gray-900 z-50 md:hidden 
-                         shadow-2xl border-l border-purple-200/20"
-            >
-              {/* Mobile Menu Header */}
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Dashboard Menu</h2>
-                  <button
-                    onClick={() => setShowMobileMenu(false)}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-                <div className="flex items-center gap-3">
-                  <img
-                    src={user?.photoURL || "https://placehold.co/40x40/7E69AB/FFFFFF?text=U"}
-                    alt="Profile"
-                    className="w-12 h-12 rounded-full border-2 border-purple-200"
-                  />
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {user?.displayName || user?.email?.split('@')[0]}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {user?.email}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Mobile Navigation Items */}
-              <div className="p-6">
-                <nav className="space-y-2">
-                  {navItems.map((item, index) => (
-                    <motion.button
-                      key={item.name}
-                      onClick={() => {
-                        navigate(item.path);
-                        setShowMobileMenu(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ${
-                        item.active
-                          ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                      }`}
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <item.icon size={20} />
-                      <span className="font-medium">{item.name}</span>
-                      {item.active && (
-                        <div className="ml-auto w-2 h-2 bg-purple-500 rounded-full" />
-                      )}
-                    </motion.button>
-                  ))}
-                </nav>
-
-                <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
-                  <motion.button
-                    onClick={() => {
-                      handleLogout();
-                      setShowMobileMenu(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 dark:text-red-400 
-                             hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-300"
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <LogOut size={20} />
-                    <span className="font-medium">Logout</span>
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </>
-  );
+const iconMap = {
+  Award: Award,
+  Zap: Zap,
+  Star: Star,
+  ShieldCheck: ShieldCheck,
 };
 
 // Enhanced Modal Component
@@ -274,33 +68,37 @@ const Modal = ({ children, onClose }) => (
 );
 
 // Enhanced Stat Card
-const StatCard = ({ stat }) => (
-  <motion.div 
-    className="bg-white/70 dark:bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-black/5 
-               text-center shadow-sm hover:shadow-lg transition-all duration-300 h-full flex flex-col 
-               justify-center hover:scale-105 group"
-    whileHover={{ y: -5 }}
-  >
-    <motion.div 
-      className="w-16 h-16 mb-4 mx-auto rounded-2xl flex items-center justify-center 
-                 bg-[#7E69AB]/15 text-[#3B1E54] dark:text-purple-300 group-hover:scale-110 transition-transform"
-      whileHover={{ rotate: 360 }}
-      transition={{ duration: 0.6 }}
+const StatCard = ({ stat }) => {
+  const Icon = iconMap[stat.icon] || Star; // fallback if unknown
+
+  return (
+    <motion.div
+      className="bg-white/70 dark:bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-black/5 
+                 text-center shadow-sm hover:shadow-lg transition-all duration-300 h-full flex flex-col 
+                 justify-center hover:scale-105 group"
+      whileHover={{ y: -5 }}
     >
-      {stat.icon}
+      <motion.div
+        className="w-16 h-16 mb-4 mx-auto rounded-2xl flex items-center justify-center 
+                   bg-[#7E69AB]/15 text-[#3B1E54] dark:text-purple-300 group-hover:scale-110 transition-transform"
+        whileHover={{ rotate: 360 }}
+        transition={{ duration: 0.6 }}
+      >
+        <Icon className="text-purple-600 dark:text-purple-300" size={24} />
+      </motion.div>
+      <p className="text-3xl font-bold text-[#1f2040] dark:text-white mb-2">
+        {stat.value}
+      </p>
+      <p className="text-sm text-[#4b546e] dark:text-gray-300 font-medium">
+        {stat.label}
+      </p>
     </motion.div>
-    <p className="text-3xl font-bold text-[#1f2040] dark:text-white mb-2">
-      {stat.value}
-    </p>
-    <p className="text-sm text-[#4b546e] dark:text-gray-300 font-medium">
-      {stat.label}
-    </p>
-  </motion.div>
-);
+  );
+};
 
 // Enhanced Skill Management Card
 const SkillManagementCard = ({ title, skills, onAdd, onRemove }) => (
-  <motion.div 
+  <motion.div
     className="bg-white/70 dark:bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-black/5 
                shadow-sm h-full flex flex-col hover:shadow-lg transition-all duration-300"
     whileHover={{ scale: 1.02 }}
@@ -313,7 +111,7 @@ const SkillManagementCard = ({ title, skills, onAdd, onRemove }) => (
         {title}
       </h3>
     </div>
-    
+
     <div className="flex-grow overflow-y-auto pr-2 -mr-2 mb-4">
       {skills.length > 0 ? (
         <ul className="space-y-3">
@@ -351,7 +149,7 @@ const SkillManagementCard = ({ title, skills, onAdd, onRemove }) => (
         </div>
       )}
     </div>
-    
+
     <motion.button
       onClick={onAdd}
       className="w-full flex items-center justify-center gap-2 py-3 px-4 
@@ -369,7 +167,7 @@ const SkillManagementCard = ({ title, skills, onAdd, onRemove }) => (
 
 // Enhanced Upcoming Session Card
 const UpcomingSessionCard = ({ session }) => (
-  <motion.div 
+  <motion.div
     className="bg-white/80 dark:bg-gray-800/50 p-4 rounded-xl shadow-md border border-black/5 
                flex items-center gap-4 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
     whileHover={{ x: 5 }}
@@ -402,88 +200,182 @@ const UpcomingSessionCard = ({ session }) => (
   </motion.div>
 );
 
-// Main Dashboard Component
+// Utility to sanitize Firestore data (remove undefined / invalid values)
+const sanitize = (obj) =>
+  Object.fromEntries(
+    Object.entries(obj).filter(
+      ([, v]) => v !== undefined && typeof v !== "symbol"
+    )
+  );
+
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
 
-  const [currentUser, setCurrentUser] = useState({
-    name: user?.displayName || user?.email?.split('@')[0] || "User",
+  // --- Default state for new users
+  const defaultUserData = {
+    name: user?.displayName || user?.email?.split("@")[0] || "User",
     bio: "React developer passionate about sharing knowledge and learning new design skills.",
-    profilePicture: user?.photoURL || "https://placehold.co/128x128/7E69AB/FFFFFF?text=U",
+    profilePicture:
+      user?.photoURL || "https://placehold.co/128x128/7E69AB/FFFFFF?text=U",
     socials: {
       github: "your-github",
-      linkedin: "your-linkedin", 
+      linkedin: "your-linkedin",
       twitter: "your-twitter",
       email: user?.email || "user@example.com",
     },
     interests: ["Photography", "Hiking", "Sci-Fi Movies", "Cooking"],
-  });
+    skillsToTeach: ["React", "JavaScript", "Tailwind CSS"],
+    skillsToLearn: ["UI/UX Design", "Figma", "Python"],
+    stats: [
+      { value: "240", label: "SkillCoins", icon: "Award" },
+      { value: "28", label: "Sessions Done", icon: "Zap" },
+      { value: "4.9", label: "Rating", icon: "Star" },
+    ],
 
-  const [userStats] = useState([
-    { value: "240", label: "SkillCoins", icon: <Award size={24} /> },
-    { value: "28", label: "Sessions Done", icon: <Zap size={24} /> },
-    { value: "4.9", label: "Rating", icon: <Star size={24} /> },
-  ]);
+    upcomingSessions: [
+      {
+        skill: "UI/UX Design Basics",
+        with: "Priya Verma",
+        date: "Sept 5, 2:00 PM",
+        type: "learn",
+      },
+      {
+        skill: "Intro to React Hooks",
+        with: "Rohan K.",
+        date: "Sept 8, 11:00 AM",
+        type: "teach",
+      },
+    ],
+    achievements: [
+      { icon: "ShieldCheck", label: "Verified Teacher" },
+      { icon: "Star", label: "Top Learner" },
+      { icon: "Zap", label: "10+ Sessions" },
+    ],
+  };
 
-  const [skillsToTeach, setSkillsToTeach] = useState([
-    "React",
-    "JavaScript", 
-    "Tailwind CSS",
-  ]);
-  const [skillsToLearn, setSkillsToLearn] = useState([
-    "UI/UX Design",
-    "Figma",
-    "Python",
-  ]);
+  // --- Firestore-backed state
+  const [currentUser, setCurrentUser] = useState(defaultUserData);
+  const [skillsToTeach, setSkillsToTeach] = useState(
+    defaultUserData.skillsToTeach
+  );
+  const [skillsToLearn, setSkillsToLearn] = useState(
+    defaultUserData.skillsToLearn
+  );
+  const [userStats, setUserStats] = useState(defaultUserData.stats);
+  const [upcomingSessions, setUpcomingSessions] = useState(
+    defaultUserData.upcomingSessions
+  );
+  const [achievements, setAchievements] = useState(
+    defaultUserData.achievements
+  );
 
-  const [upcomingSessions] = useState([
-    {
-      skill: "UI/UX Design Basics",
-      with: "Priya Verma",
-      date: "Sept 5, 2:00 PM",
-      type: "learn",
-    },
-    {
-      skill: "Intro to React Hooks",
-      with: "Rohan K.",
-      date: "Sept 8, 11:00 AM",
-      type: "teach",
-    },
-  ]);
-
-  const achievements = [
-    { icon: <ShieldCheck size={20} />, label: "Verified Teacher" },
-    { icon: <Star size={20} />, label: "Top Learner" },
-    { icon: <Zap size={20} />, label: "10+ Sessions" },
-  ];
-
+  // --- Profile edit modal states
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isAddingSkill, setIsAddingSkill] = useState(null);
   const [newSkill, setNewSkill] = useState("");
   const [profileForm, setProfileForm] = useState(currentUser);
-  const fileInputRef = useRef(null);
+  const [saving, setSaving] = useState(false);
 
-  // Event Handlers
-  const handleProfileFormChange = (e) => {
-    const { name, value } = e.target;
-    if (name.includes(".")) {
-      const [parent, child] = name.split(".");
-      setProfileForm((prev) => ({
-        ...prev,
-        [parent]: { ...prev[parent], [child]: value },
-      }));
-    } else {
-      setProfileForm((prev) => ({ ...prev, [name]: value }));
+  // --- Fetch user data from Firestore on load
+  useEffect(() => {
+    if (!user) return;
+    const userRef = doc(db, "users", user.uid);
+
+    const unsub = onSnapshot(userRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setCurrentUser(data);
+        setProfileForm(data);
+        setSkillsToTeach(data.skillsToTeach || []);
+        setSkillsToLearn(data.skillsToLearn || []);
+        setUserStats(data.stats || []);
+        setUpcomingSessions(data.upcomingSessions || []);
+        setAchievements(data.achievements || []);
+      } else {
+        // If no doc, create default one
+        setDoc(userRef, defaultUserData);
+      }
+      (error) => {
+        console.error("Realtime listener error:", error);
+      };
+    });
+
+    return () => unsub();
+  }, [user]);
+
+  // --- Manual save button
+  const handleProfileSave = async (e) => {
+    e.preventDefault();
+    if (!user) return;
+    setSaving(true);
+    const userRef = doc(db, "users", user.uid);
+
+    try {
+      await setDoc(
+        userRef,
+        sanitize({
+          ...profileForm,
+          skillsToTeach,
+          skillsToLearn,
+          stats: userStats,
+          upcomingSessions,
+          achievements,
+        }),
+        { merge: true }
+      );
+
+      console.log("Profile manually saved ✅");
+      setIsEditingProfile(false);
+    } catch (err) {
+      console.error("Manual save error:", err);
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleProfileSave = (e) => {
-    e.preventDefault();
-    setCurrentUser(profileForm);
-    setIsEditingProfile(false);
+  // --- Debounced auto-save updater
+  const debouncedUpdate = useRef(
+    debounce(async (userRef, data) => {
+      try {
+        await setDoc(userRef, sanitize(data), { merge: true });
+      } catch (err) {
+        console.error("Firestore update error:", err);
+      }
+    }, 500)
+  ).current;
+
+  // --- Handle form input changes
+  const handleProfileFormChange = (e) => {
+    const { name, value } = e.target;
+
+    // Update local state
+    setProfileForm((prev) => {
+      if (name.includes(".")) {
+        const [parent, child] = name.split(".");
+        return {
+          ...prev,
+          [parent]: { ...prev[parent], [child]: value },
+        };
+      } else {
+        return { ...prev, [name]: value };
+      }
+    });
+
+    // Auto-sync to Firestore
+    if (user) {
+      const userRef = doc(db, "users", user.uid);
+      if (name.includes(".")) {
+        const [parent, child] = name.split(".");
+        debouncedUpdate(userRef, { [`${parent}.${child}`]: value });
+      } else {
+        debouncedUpdate(userRef, { [name]: value });
+      }
+    }
   };
 
+  // --- Profile picture preview
   const handleProfilePictureChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const reader = new FileReader();
@@ -496,33 +388,50 @@ const Dashboard = () => {
     }
   };
 
-  const handleAddSkill = () => {
-    if (!newSkill.trim()) return;
-    if (isAddingSkill === "teach")
-      setSkillsToTeach((prev) => [...prev, newSkill]);
-    else if (isAddingSkill === "learn")
-      setSkillsToLearn((prev) => [...prev, newSkill]);
+  // --- Add new skill
+  const handleAddSkill = async () => {
+    if (!newSkill.trim() || !user) return;
+    const userRef = doc(db, "users", user.uid);
+
+    if (isAddingSkill === "teach") {
+      const updated = [...skillsToTeach, newSkill];
+      setSkillsToTeach(updated);
+      await setDoc(userRef, { skillsToTeach: updated }, { merge: true });
+    } else if (isAddingSkill === "learn") {
+      const updated = [...skillsToLearn, newSkill];
+      setSkillsToLearn(updated);
+      await updateDoc(userRef, { skillsToLearn: updated }, { merge: true });
+    }
+
     setNewSkill("");
     setIsAddingSkill(null);
   };
 
-  const handleRemoveSkill = (skillToRemove, type) => {
-    if (type === "teach")
-      setSkillsToTeach((prev) => prev.filter((s) => s !== skillToRemove));
-    else setSkillsToLearn((prev) => prev.filter((s) => s !== skillToRemove));
+  // --- Remove skill
+  const handleRemoveSkill = async (skillToRemove, type) => {
+    if (!user) return;
+    const userRef = doc(db, "users", user.uid);
+
+    if (type === "teach") {
+      const updated = skillsToTeach.filter((s) => s !== skillToRemove);
+      setSkillsToTeach(updated);
+      await setDoc(userRef, { skillsToTeach: updated }, { merge: true });
+    } else {
+      const updated = skillsToLearn.filter((s) => s !== skillToRemove);
+      setSkillsToLearn(updated);
+      await updateDoc(userRef, { skillsToLearn: updated }, { merge: true });
+    }
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-purple-50 via-white to-indigo-50 
-                    dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950 text-[#2d2d44] dark:text-gray-200 font-sans">
-      
-      {/* Enhanced Navbar */}
+    <div
+      className="min-h-screen pt-12 w-full bg-gradient-to-br from-purple-50 via-white to-indigo-50 
+                    dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950 text-[#2d2d44] dark:text-gray-200 font-sans"
+    >
       <DashboardNavbar />
-      
-      {/* Main Content with top padding */}
+
       <main className="pt-20 p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
-          
           {/* Enhanced Profile Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -589,10 +498,8 @@ const Dashboard = () => {
 
           {/* Dashboard Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            
             {/* Left Column - Sessions & Achievements */}
             <div className="lg:col-span-1 xl:col-span-1 flex flex-col gap-6">
-              
               {/* Upcoming Sessions */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -613,7 +520,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </motion.div>
-              
+
               {/* Achievements */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -625,19 +532,22 @@ const Dashboard = () => {
                     Achievements
                   </h3>
                   <div className="flex flex-wrap gap-4">
-                    {achievements.map((ach) => (
-                      <div
-                        key={ach.label}
-                        className="flex flex-col items-center text-center gap-2 p-3 bg-purple-50 dark:bg-purple-900/50 rounded-lg flex-1"
-                      >
-                        <div className="text-purple-600 dark:text-purple-300">
-                          {ach.icon}
+                    {achievements.map((ach) => {
+                      const Icon = iconMap[ach.icon] || ShieldCheck; // fallback to Star
+                      return (
+                        <div
+                          key={ach.label}
+                          className="flex flex-col items-center text-center gap-2 p-3 bg-purple-50 dark:bg-purple-900/50 rounded-lg flex-1"
+                        >
+                          <div className="text-purple-600 dark:text-purple-300">
+                            <Icon size={20} />
+                          </div>
+                          <p className="text-xs font-semibold text-purple-800 dark:text-purple-200">
+                            {ach.label}
+                          </p>
                         </div>
-                        <p className="text-xs font-semibold text-purple-800 dark:text-purple-200">
-                          {ach.label}
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </motion.div>
@@ -645,7 +555,6 @@ const Dashboard = () => {
 
             {/* Center Column - CTA & Skills */}
             <div className="lg:col-span-2 xl:col-span-2 flex flex-col gap-6">
-              
               {/* Call to Action Card */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -661,13 +570,13 @@ const Dashboard = () => {
                 <motion.button
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate('/skills')}
+                  onClick={() => navigate("/skills")}
                   className="bg-white text-purple-600 font-bold py-3 px-8 rounded-full flex items-center gap-2 shadow-xl"
                 >
                   <Search size={20} /> Find a Match
                 </motion.button>
               </motion.div>
-              
+
               {/* Skills Management */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <motion.div
@@ -788,7 +697,7 @@ const Dashboard = () => {
               </form>
             </Modal>
           )}
-          
+
           {isAddingSkill && (
             <Modal onClose={() => setIsAddingSkill(null)}>
               <div className="p-6">

@@ -25,14 +25,14 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
-  const logout = async () => {
-    try {
-      await signOut(auth);
-      setUser(null);
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
+const logout = async () => {
+  try {
+    await signOut(auth);
+  
+  } catch (error) {
+    console.error('Error signing out:', error);
+  }
+};
 
   const value = {
     user,

@@ -1,60 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from './firebase'; // make sure you export auth from firebase.js
+import React from 'react';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './Pages/HomePage';
 import Dashboard from './Pages/Dashboard';
 import AboutPage from './Pages/About';
 import AuthPage from './Pages/Auth';
+import SkillListings from './Pages/SkillListings'; // Add this import
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
-
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Track Firebase auth state
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-    });
-    return () => unsubscribe();
-  }, []);
+  // **UPDATED: Hide navbar on these specific pages**
+  const pathsWithoutMainNavbar = ['/auth', '/dashboard', '/skills'];
+  const hideMainNavbar = pathsWithoutMainNavbar.includes(location.pathname);
 
-  const pathsWithoutLayout = ['/auth', '/dashboard'];
-  const hideLayout =
-    pathsWithoutLayout.includes(location.pathname) ||
-    (location.pathname === '/' && currentUser);
-
-  // 🔹 Logout handler
   const handleLogout = async () => {
-    await signOut(auth);
-    navigate('/');
+    await logout();
+    navigate('/auth');
   };
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
-      {!hideLayout && (
+      {/* **UPDATED: Only show main navbar when not on dashboard/skills pages** */}
+      {!hideMainNavbar && (
         <Navbar
-          isLoggedIn={!!currentUser}
+          isLoggedIn={!!user}
           onLoginClick={() => navigate('/auth')}
           onLogout={handleLogout}
           userName={user?.displayName || user?.email}
         />
       )}
 
-      {/* 🔹 Main routes */}
       <main className="flex-grow">
         <Routes>
           <Route
             path="/"
             element={
-              currentUser ? (
-                <Dashboard currentUser={currentUser} onLogout={handleLogout} />
+              user ? (
+                <Navigate to="/dashboard" replace />
               ) : (
-                <HomePage onGetstartedClick={() => navigate("/auth")} />
+                <HomePage onGetstartedClick={() => navigate('/auth')} />
               )
             }
           />
@@ -65,14 +55,29 @@ function App() {
           {/* Protected routes with their own navbars */}
           <Route
             path="/dashboard"
-            element={<Dashboard currentUser={currentUser} onLogout={handleLogout} />}
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* **NEW: Skills page route** */}
+          <Route
+            path="/skills"
+            element={
+              <ProtectedRoute>
+                <SkillListings />
+              </ProtectedRoute>
+            }
           />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 
-      {!hideLayout && <Footer />}
+      {/* **UPDATED: Only show footer when main navbar is visible** */}
+      {!hideMainNavbar && <Footer />}
     </div>
   );
 }
