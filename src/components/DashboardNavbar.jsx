@@ -12,7 +12,7 @@ import {
   BookOpen,
   Zap,
   Award,
-
+Heart,
   X,
   
   LogOut,
@@ -42,6 +42,7 @@ const DashboardNavbar = () => {
   const navItems = [
     { name: "Dashboard", icon: Home, path: "/dashboard", active: true },
     { name: "Skills", icon: Grid3X3, path: "/skills" },
+    { name: 'Matchmaking', icon: Heart, path: '/matchmaking'},
     { name: "Messages", icon: MessageSquare, path: "/messages" },
     { name: "Community", icon: Users, path: "/community" },
   ];
@@ -71,7 +72,7 @@ const DashboardNavbar = () => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setCurrentUser(data);
-        setProfileForm(data);
+  
        
       } else {
         // If no doc, create default one

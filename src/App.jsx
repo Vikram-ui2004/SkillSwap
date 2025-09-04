@@ -6,8 +6,9 @@ import Footer from './components/Footer';
 import HomePage from './Pages/HomePage';
 import Dashboard from './Pages/Dashboard';
 import AboutPage from './Pages/About';
+import MatchmakingPage from './Pages/MatchMakingPage';
 import AuthPage from './Pages/Auth';
-import SkillListings from './Pages/SkillListings'; // Add this import
+import SkillListings from './Pages/SkillListings'; 
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
   const location = useLocation();
 
   // **UPDATED: Hide navbar on these specific pages**
-  const pathsWithoutMainNavbar = ['/auth', '/dashboard', '/skills'];
+  const pathsWithoutMainNavbar = ['/auth', '/dashboard', '/skills', '/matchmaking'];
   const hideMainNavbar = pathsWithoutMainNavbar.includes(location.pathname);
 
   const handleLogout = async () => {
@@ -54,6 +55,16 @@ function App() {
 
           {/* Protected routes with their own navbars */}
           <Route
+            path="/skills"
+            element={
+              <ProtectedRoute>
+                <SkillListings />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Protected routes with their own navbars */}
+          <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
@@ -61,13 +72,12 @@ function App() {
               </ProtectedRoute>
             }
           />
-
           {/* **NEW: Skills page route** */}
           <Route
-            path="/skills"
+            path="/matchmaking"
             element={
               <ProtectedRoute>
-                <SkillListings />
+                <MatchmakingPage />
               </ProtectedRoute>
             }
           />
