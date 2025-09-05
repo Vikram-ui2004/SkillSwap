@@ -457,7 +457,7 @@ const SearchAndFilter = ({
 };
 
 // ---------------- Request Modal ----------------
-const RequestModal = ({ skill, onClose, onConfirm }) => {
+const RequestModal = ({ skill, onClose, onConfirm, isLoading }) => {
   const [message, setMessage] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
 
@@ -561,25 +561,52 @@ const RequestModal = ({ skill, onClose, onConfirm }) => {
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            disabled={isLoading}
+            className="flex-1 py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <motion.button
             onClick={handleSend}
-            disabled={!selectedTime}
+            disabled={!selectedTime || isLoading}
             className="flex-1 py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2"
-            whileHover={{ scale: selectedTime ? 1.02 : 1 }}
-            whileTap={{ scale: selectedTime ? 0.98 : 1 }}
+            whileHover={{ scale: !isLoading && selectedTime ? 1.02 : 1 }}
+            whileTap={{ scale: !isLoading && selectedTime ? 0.98 : 1 }}
           >
-            <Zap size={18} />
-            Send Request
+            {isLoading ? (
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+            ) : (
+              <>
+                <Zap size={18} />
+                Send Request
+              </>
+            )}
           </motion.button>
         </div>
       </div>
     </Modal>
   );
 };
+
 
 
 // ---------------- Main Component ----------------
@@ -820,6 +847,7 @@ const SkillListings = () => {
                 skill={requestingSkill}
                 onClose={() => setRequestingSkill(null)}
                 onConfirm={handleConfirmRequest}
+                 isLoading={isLoading}   
               />
             )}
           </AnimatePresence>
