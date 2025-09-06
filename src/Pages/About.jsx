@@ -10,6 +10,35 @@ import { cn } from "../lib/utils";
 import teamMember1 from "../assets/svg1.svg";
 import teamMember2 from "../assets/svg2.svg";
 import teamMember3 from "../assets/svg3.svg";
+import teamMember4 from "../assets/svg4.svg"; // New team member image
+
+// --- Team Members Data ---
+const teamMembers = [
+  { 
+    image: teamMember1, 
+    name: 'Vikram Nayak', 
+    role: 'Backend Developer',
+    description: 'Architect of our robust server infrastructure and API design'
+  },
+  { 
+    image: teamMember2, 
+    name: 'Abhishek Kumar', 
+    role: 'Frontend & UI Designer',
+    description: 'Crafting beautiful, intuitive user experiences'
+  },
+  { 
+    image: teamMember3, 
+    name: 'Pulkit Dhingra', 
+    role: 'Graphic Designer',
+    description: 'Creating stunning visuals and brand identity'
+  },
+  { 
+    image: teamMember4, 
+    name: 'Jyoti', 
+    role: 'Documentation Specialist',
+    description: 'Ensuring clear communication and comprehensive guides'
+  },
+];
 
 // --- Custom Hook for Media Query ---
 const useMediaQuery = (query) => {
@@ -46,14 +75,11 @@ const VantaBackground = ({ children }) => {
           minWidth: 200.0,
           scale: 1.0,
           scaleMobile: 1.0,
-          // Reduced density settings for better text visibility
           color: 0x7e69ab,
-          backgroundColor: 0x1a1447, // Darker background for better contrast
-          // Significantly reduced density based on device
+          backgroundColor: 0x1a1447,
           points: isMobile ? 5.00 : isTablet ? 6.00 : 8.00,
           maxDistance: isMobile ? 14.00 : isTablet ? 15.00 : 18.00,
           spacing: isMobile ? 24.00 : isTablet ? 22.00 : 20.00,
-          // Reduced line opacity for less visual interference
           lineOpacity: isMobile ? 0.3 : 0.4,
         })
       );
@@ -65,7 +91,6 @@ const VantaBackground = ({ children }) => {
 
   return (
     <div ref={vantaRef} className="relative w-full">
-      {/* Add overlay for better text contrast */}
       <div className="absolute inset-0 bg-black/20 z-0"></div>
       {children}
     </div>
@@ -75,9 +100,7 @@ const VantaBackground = ({ children }) => {
 // --- Hero Section ---
 const AboutHero = () => (
   <section className="h-screen flex flex-col justify-center items-center text-center px-4 sm:px-6">
-    {/* Increased z-index and added background for better text visibility */}
     <div className="relative z-20 max-w-4xl mx-auto">
-      {/* Added text shadow and background for better readability */}
       <motion.h1
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -188,8 +211,8 @@ const OurValuesSection = () => (
     </section>
 );
 
-// --- Team Section with 3D Card Effect ---
-const TeamCard = ({ image, name, role }) => {
+// --- Enhanced Team Section with 3D Card Effect ---
+const TeamCard = ({ image, name, role, description }) => {
     const ref = useRef(null);
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -208,26 +231,65 @@ const TeamCard = ({ image, name, role }) => {
     };
 
     return (
-        <div style={{ perspective: "1000px" }} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
-            <div ref={ref} className="bg-white/70 backdrop-blur-md p-6 rounded-2xl border border-black/5 shadow-lg text-center transition-transform duration-300 ease-out">
-                <img src={image} alt={name} className="w-28 h-28 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full mx-auto mb-4 object-cover shadow-md border-4 border-white" />
-                <h4 className="text-lg sm:text-xl font-bold text-[#1f2040]">{name}</h4>
-                <p className="text-[#7E69AB] font-medium">{role}</p>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            viewport={{ once: true }}
+            style={{ perspective: "1000px" }} 
+            onMouseMove={handleMouseMove} 
+            onMouseLeave={handleMouseLeave}
+        >
+            <div ref={ref} className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-black/5 shadow-lg text-center transition-all duration-300 ease-out hover:shadow-2xl group">
+                <div className="relative mb-6">
+                    <img 
+                        src={image} 
+                        alt={name} 
+                        className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full mx-auto object-cover shadow-lg border-4 border-white group-hover:scale-105 transition-transform duration-300" 
+                    />
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <h4 className="text-lg sm:text-xl font-bold text-[#1f2040] mb-2">{name}</h4>
+                <p className="text-[#7E69AB] font-semibold mb-3">{role}</p>
+                <p className="text-sm text-[#4b546e] leading-relaxed">{description}</p>
             </div>
-        </div>
+        </motion.div>
     );
 };
 
 const MeetTheTeamSection = () => (
     <section className="py-16 sm:py-24 bg-[#f9f6ff] px-4 sm:px-8">
-        <div className="max-w-5xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1f2040] mb-12 sm:mb-16">
-                The People Behind the Platform
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 sm:gap-8">
-                <TeamCard image={teamMember1} name="Alex Johnson" role="Founder & CEO" />
-                <TeamCard image={teamMember2} name="Maria Garcia" role="Lead Developer" />
-                <TeamCard image={teamMember3} name="Chen Wei" role="Head of Community" />
+        <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12 sm:mb-16">
+                <motion.h2 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                    viewport={{ once: true }}
+                    className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1f2040] mb-4"
+                >
+                    Meet Our Amazing Team
+                </motion.h2>
+                <motion.p 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    viewport={{ once: true }}
+                    className="text-base sm:text-lg text-[#4b546e] max-w-2xl mx-auto"
+                >
+                    Four passionate individuals working together to revolutionize the way people learn and share knowledge.
+                </motion.p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+                {teamMembers.map((member, index) => (
+                    <TeamCard 
+                        key={index} 
+                        image={member.image} 
+                        name={member.name} 
+                        role={member.role} 
+                        description={member.description}
+                    />
+                ))}
             </div>
         </div>
     </section>

@@ -1,7 +1,9 @@
 import React from 'react';
-import { BookOpen, Twitter, Linkedin, Facebook, Youtube } from 'lucide-react';
+import { motion, AnimatePresence } from "framer-motion";
 
-// Reusable component for footer links to keep the code clean
+import { BookOpen, Twitter, Linkedin, Facebook, Youtube } from 'lucide-react';
+import whitelogo from '../assets/white-logo.png'; 
+
 const FooterLink = ({ href, children }) => (
   <a href={href} className="text-[#D4BEE4] hover:text-white transition-colors duration-300">
     {children}
@@ -61,9 +63,49 @@ const Footer = () => {
 
         {/* Divider and bottom section */}
         <div className="border-t border-white/20 pt-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
-          <div className="flex items-center space-x-2 mb-4 md:mb-0">
-            <BookOpen className="w-8 h-8 text-[#D4BEE4]" />
-            <span className="text-2xl font-bold text-white">SkillSwap</span>
+          <div className="flex items-center space-x-2 mb-4 md:mb-0"> {/* Enhanced Logo */}
+                        <motion.a 
+                          href="/" 
+                          className="flex items-center group"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <motion.div
+                            className="relative"
+                            whileHover={{ rotate: 360 }}
+                            transition={{ duration: 0.8, ease: "easeInOut" }}
+                          >
+                            <img 
+                              src={whitelogo} 
+                              alt="SkillSwap Logo" 
+                              className="w-18 h-18 object-contain drop-shadow-lg" 
+                            />
+                            {/* Glow effect */}
+                            <motion.div 
+                              className="absolute inset-0 rounded-full bg-purple-400/30 blur-lg"
+                              animate={{ 
+                                scale: [1, 1.2, 1],
+                                opacity: [0.3, 0.6, 0.3]
+                              }}
+                              transition={{ 
+                                duration: 2, 
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            />
+                          </motion.div>
+                          
+                          <motion.span 
+                            className="ml-0 text-2xl font-bold bg-white
+                                       bg-clip-text text-transparent"
+                            whileHover={{ 
+                              background: "linear-gradient(90deg, #7E69AB 0%, #9B7EDB 100%)",
+                              WebkitBackgroundClip: "text"
+                            }}
+                          >
+                            SkillSwap
+                          </motion.span>
+                        </motion.a>
           </div>
           <div className="text-sm text-[#D4BEE4]">
             <p>&copy; {new Date().getFullYear()} SkillSwap, Inc. All rights reserved.</p>

@@ -34,6 +34,7 @@ import {
   MessageSquare,
   Settings,
   Sparkles,
+  Plus,  // Added for the post button
 } from "lucide-react";
 
 // 🔥 Firestore imports
@@ -607,15 +608,14 @@ const RequestModal = ({ skill, onClose, onConfirm, isLoading }) => {
   );
 };
 
-
-
 // ---------------- Main Component ----------------
 const SkillListings = () => {
   const { user } = useAuth();
+  const navigate = useNavigate(); // Add navigate hook
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sortBy, setSortBy] = useState("rating");
-  const [skills, setSkills] = useState(dummySkills); // default fallback to dummy
+  const [skills, setSkills] = useState(dummySkills);
   const [filteredSkills, setFilteredSkills] = useState(dummySkills);
   const [requestingSkill, setRequestingSkill] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -681,37 +681,53 @@ const SkillListings = () => {
   }, [search, category, sortBy, skills]);
 
   // Handle session request -> Firestore
- const handleConfirmRequest = async (requestData) => {
-  if (!user) {
-    alert("Please login to request a session.");
-    return;
-  }
-  setIsLoading(true);
+  const handleConfirmRequest = async (requestData) => {
+    if (!user) {
+      alert("Please login to request a session.");
+      return;
+    }
+    setIsLoading(true);
 
-  try {
-    await addDoc(collection(db, "requests"), {
-      ...requestData, // contains skillId, skillName, teacherId, teacherName, time, message
-      studentId: user.uid,
-      studentName: user.displayName || "Anonymous",
-      studentEmail: user.email,
-      status: "pending",
-      createdAt: serverTimestamp(),
-    });
+    try {
+      await addDoc(collection(db, "requests"), {
+        ...requestData,
+        studentId: user.uid,
+        studentName: user.displayName || "Anonymous",
+        studentEmail: user.email,
+        status: "pending",
+        createdAt: serverTimestamp(),
+      });
 
-    alert(`✅ Request sent to ${requestData.teacherName} for ${requestData.time}`);
-    setRequestingSkill(null);
-  } catch (error) {
-    console.error("❌ Error saving request:", error);
-    alert("❌ Failed to send request. Try again.");
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+      alert(`✅ Request sent to ${requestData.teacherName} for ${requestData.time}`);
+      setRequestingSkill(null);
+    } catch (error) {
+      console.error("❌ Error saving request:", error);
+      alert("❌ Failed to send request. Try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-900 dark:to-indigo-950">
       <DashboardNavbar />
+
+      {/* 🚀 NEW: Post Skill Button - Fixed Position */}
+      <motion.button
+        onClick={() => navigate('/skills/post')}
+        className="fixed top-24 right-6 z-40 bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-2xl font-semibold shadow-2xl border border-purple-200/20 backdrop-blur-sm transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95"
+        whileHover={{ 
+          scale: 1.05, 
+          boxShadow: "0 20px 40px rgba(126, 105, 171, 0.3)" 
+        }}
+        whileTap={{ scale: 0.95 }}
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+      >
+        <Plus size={20} />
+        <span className="hidden sm:inline">Post Skill</span>
+      </motion.button>
 
       <div className="pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -847,7 +863,7 @@ const SkillListings = () => {
                 skill={requestingSkill}
                 onClose={() => setRequestingSkill(null)}
                 onConfirm={handleConfirmRequest}
-                 isLoading={isLoading}   
+                isLoading={isLoading}
               />
             )}
           </AnimatePresence>

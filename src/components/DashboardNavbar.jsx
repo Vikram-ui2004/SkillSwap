@@ -5,6 +5,8 @@ import { doc, setDoc, onSnapshot } from "firebase/firestore";
 import {  db } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocation } from "react-router-dom";
+import purplelogo from '../assets/purple-logo.png'; 
+
 
 
 import {
@@ -98,18 +100,49 @@ const DashboardNavbar = () => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <motion.div
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() => navigate("/dashboard")}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <BookOpen className="text-purple-600" size={28} />
-              <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                SkillSwap
-              </span>
-            </motion.div>
+             {/* Enhanced Logo */}
+                        <motion.a 
+                          href="/" 
+                          className="flex items-center group"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <motion.div
+                            className="relative"
+                            whileHover={{ rotate: 360 }}
+                            transition={{ duration: 0.8, ease: "easeInOut" }}
+                          >
+                            <img 
+                              src={purplelogo} 
+                              alt="SkillSwap Logo" 
+                              className="w-18 h-18 object-contain drop-shadow-lg" 
+                            />
+                            {/* Glow effect */}
+                            <motion.div 
+                              className="absolute inset-0 rounded-full bg-purple-400/30 blur-lg"
+                              animate={{ 
+                                scale: [1, 1.2, 1],
+                                opacity: [0.3, 0.6, 0.3]
+                              }}
+                              transition={{ 
+                                duration: 2, 
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            />
+                          </motion.div>
+                          
+                          <motion.span 
+                            className="ml-0 text-2xl font-bold bg-gradient-to-r from-[#1f2040] to-[#7E69AB] 
+                                       bg-clip-text text-transparent"
+                            whileHover={{ 
+                              background: "linear-gradient(90deg, #7E69AB 0%, #9B7EDB 100%)",
+                              WebkitBackgroundClip: "text"
+                            }}
+                          >
+                            SkillSwap
+                          </motion.span>
+                        </motion.a>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-2">

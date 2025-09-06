@@ -10,28 +10,38 @@ import MatchmakingPage from './Pages/MatchMakingPage';
 import AuthPage from './Pages/Auth';
 import SkillListings from './Pages/SkillListings'; 
 import ProtectedRoute from './components/ProtectedRoute';
+import PostSkillPage from './Pages/SkillPostingPage';
+
+// Move constant outside component to avoid recreation on each render
+const PATHS_WITHOUT_MAIN_NAVBAR = new Set([
+  '/auth', 
+  '/dashboard', 
+  '/skills', 
+  '/matchmaking', 
+  '/skills/post'
+]);
 
 function App() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
+  const { pathname } = useLocation();
 
-  // **UPDATED: Hide navbar on these specific pages**
-  const pathsWithoutMainNavbar = ['/auth', '/dashboard', '/skills', '/matchmaking'];
-  const hideMainNavbar = pathsWithoutMainNavbar.includes(location.pathname);
+  // Use Set.has() for O(1) lookup instead of Array.includes()
+  const hideMainNavbar = PATHS_WITHOUT_MAIN_NAVBAR.has(pathname);
 
   const handleLogout = async () => {
     await logout();
     navigate('/auth');
   };
 
+  const handleAuthNavigation = () => navigate('/auth');
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans flex flex-col">
-      {/* **UPDATED: Only show main navbar when not on dashboard/skills pages** */}
       {!hideMainNavbar && (
         <Navbar
           isLoggedIn={!!user}
-          onLoginClick={() => navigate('/auth')}
+          onLoginClick={handleAuthNavigation}
           onLogout={handleLogout}
           userName={user?.displayName || user?.email}
         />
@@ -45,7 +55,7 @@ function App() {
               user ? (
                 <Navigate to="/dashboard" replace />
               ) : (
-                <HomePage onGetstartedClick={() => navigate('/auth')} />
+                <HomePage onGetstartedClick={handleAuthNavigation} />
               )
             }
           />
@@ -53,7 +63,15 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/auth" element={<AuthPage />} />
 
-          {/* Protected routes with their own navbars */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/skills"
             element={
@@ -63,16 +81,15 @@ function App() {
             }
           />
 
-          {/* Protected routes with their own navbars */}
           <Route
-            path="/dashboard"
+            path="/skills/post"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <PostSkillPage />
               </ProtectedRoute>
             }
           />
-          {/* **NEW: Skills page route** */}
+
           <Route
             path="/matchmaking"
             element={
@@ -86,7 +103,6 @@ function App() {
         </Routes>
       </main>
 
-      {/* **UPDATED: Only show footer when main navbar is visible** */}
       {!hideMainNavbar && <Footer />}
     </div>
   );
