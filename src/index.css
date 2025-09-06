@@ -1,8 +1,8 @@
 
-
 @import "tailwindcss";
 
-/* 
-body {
-  @apply font-mont;
-} */
+@layer base {
+  html {
+    font-family: 'Montserrat', sans-serif !important; /* Override with !important */
+  }
+}
