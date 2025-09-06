@@ -540,7 +540,7 @@ const EnhancedSwipeableCardStack = ({ matches, currentIndex, onSwipe, onRequestS
   }
 
   return (
-    <div className="relative h-[500px] sm:h-[600px] md:h-[700px] lg:h-[750px] w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto">
+    <div className="relative mb-20 h-[700px] sm:h-[800px] md:h-[900px] lg:h-[950px] w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto">
       {/* Next Card Preview */}
       {nextMatch && (
         <motion.div
