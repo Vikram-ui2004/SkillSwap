@@ -44,9 +44,7 @@ const DashboardNavbar = () => {
   const navItems = [
     { name: "Dashboard", icon: Home, path: "/dashboard", active: true },
     { name: "Skills", icon: Grid3X3, path: "/skills" },
-    { name: 'Matchmaking', icon: Heart, path: '/matchmaking'},
-    { name: "Messages", icon: MessageSquare, path: "/messages" },
-    { name: "Community", icon: Users, path: "/community" },
+    { name: 'Matchmaking', icon: Heart, path: '/matchmaking'}
   ];
 
  

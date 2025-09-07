@@ -17,19 +17,11 @@ import {
     Twitter,
     Github,
     Linkedin,
+    Plus
 } from "lucide-react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-
-// --- Mock useNavigate hook ---
-// In a real app, you would use 'react-router-dom'.
-const useNavigate = () => {
-    return (path) => {
-        console.log(`Navigating to: ${path}`);
-        // You can replace this with a simple window.location change for demo purposes if needed
-        // window.location.href = path;
-    };
-};
-
+import UploadTestimonial from "../components/UploadTestimonial";
+import { useNavigate } from 'react-router-dom';
 
 // --- SVG Icons (Embedded) ---
 const SvgIcon1 = () => (
@@ -58,7 +50,6 @@ const SvgIcon4 = () => (
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
-
 
 // --- Reusable Animated Components ---
 const AnimatedSection = ({ children }) => {
@@ -122,7 +113,6 @@ const SkillPill = ({ icon, name }) => (
         <span className="font-semibold text-gray-700">{name}</span>
     </motion.div>
 );
-
 
 // --- Sections ---
 const HeroSection = ({ onGetStartedClick }) => {
@@ -318,35 +308,39 @@ const PopularSkillsSection = () => (
 );
 
 const TestimonialsSection = () => {
-  
-    // const testimonials = [
-    //     { name: "Sarah J.", role: "Web Developer", text: "SkillSwap helped me finally understand advanced JavaScript concepts. My mentor was patient and incredibly knowledgeable!" },
-    //     { name: "Mike R.", role: "Music Producer", text: "I swapped my guitar skills for music production lessons. It's been an amazing and affordable way to learn." },
-    //     { name: "Chen L.", role: "Graphic Designer", text: "The community is so supportive. I've not only learned new design software but also made some great friends." },
-    //     { name: "David K.", role: "Student", text: "As a student on a budget, this platform is a game-changer. I'm learning to code from a senior engineer for free!" },
-    //     { name: "Emily W.", role: "Photographer", text: "I taught basic photography and in return, I learned how to build my own portfolio website. Absolutely incredible." },
-    //     { name: "Alex G.", role: "Marketing Pro", text: "The perfect platform to sharpen my public speaking skills with a seasoned professional. Highly recommended!" },
-    // ];
-    
-  const [testimonials, setTestimonials] = useState([]);
+    const [testimonials, setTestimonials] = useState([]);
+    const [showUploadModal, setShowUploadModal] = useState(false);
 
-  const fetchTestimonials = () => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/testimonials`)
-      .then((res) => res.json())
-      .then((data) => setTestimonials(data))
-      .catch((err) => console.error("Error fetching testimonials:", err));
-  };
+    const fetchTestimonials = () => {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/testimonials`)
+            .then((res) => res.json())
+            .then((data) => setTestimonials(data))
+            .catch((err) => console.error("Error fetching testimonials:", err));
+    };
 
-  useEffect(() => {
-    fetchTestimonials();
-  }, []);
+    useEffect(() => {
+        fetchTestimonials();
+    }, []);
 
     const duplicatedTestimonials = [...testimonials, ...testimonials];
 
     return (
         <section id="testimonials" className="py-20 sm:py-24 bg-purple-50/50 overflow-hidden">
             <div className="max-w-7xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-12">What Our Community Says</h2>
+                <div className="flex flex-col sm:flex-row items-center justify-between mb-12">
+                    <div className="text-center sm:text-left mb-6 sm:mb-0">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">What Our Community Says</h2>
+                    </div>
+                    <motion.button
+                        onClick={() => setShowUploadModal(true)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2 shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                        <Plus size={20} />
+                        Share Your Story
+                    </motion.button>
+                </div>
             </div>
             <div className="relative w-full overflow-hidden">
                 <motion.div 
@@ -361,7 +355,7 @@ const TestimonialsSection = () => {
                     {duplicatedTestimonials.map((t, i) => (
                         <div key={i} className="flex-shrink-0 p-8 bg-white rounded-2xl shadow-lg border border-gray-100 w-80 md:w-96">
                             <Quote className="w-8 h-8 text-purple-300 mb-4" />
-                            <p className="text-gray-700 text-sm sm:text-base mb-6 h-24">“{t.text}”</p>
+                            <p className="text-gray-700 text-sm sm:text-base mb-6 h-24">"{t.text}"</p>
                             <div className="flex items-center">
                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 text-white flex items-center justify-center font-bold text-lg">
                                     {t.name.charAt(0)}
@@ -376,32 +370,50 @@ const TestimonialsSection = () => {
                 </motion.div>
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-50/50 via-transparent to-purple-50/50 pointer-events-none"></div>
             </div>
+
+            {/* Upload Testimonial Modal */}
+            <AnimatePresence>
+                {showUploadModal && (
+                    <UploadTestimonial
+                        onClose={() => setShowUploadModal(false)}
+                        onSuccess={() => {
+                            setShowUploadModal(false);
+                            fetchTestimonials(); // Refresh testimonials after upload
+                        }}
+                    />
+                )}
+            </AnimatePresence>
         </section>
     );
 };
 
-const CtaSection = ({ onGetStartedClick }) => (
-    <AnimatedSection>
-        <div className="max-w-4xl mx-auto text-center py-16 px-6 sm:px-8 relative overflow-hidden bg-white/60 border border-gray-100 rounded-2xl shadow-xl">
-             <div className="absolute inset-0 z-0 opacity-10">
-                <div className="absolute top-0 -left-1/4 w-96 h-96 bg-purple-400 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 -right-1/4 w-96 h-96 bg-indigo-400 rounded-full blur-3xl"></div>
+// Fixed CtaSection with proper useNavigate hook usage
+const CtaSection = ({ onGetStartedClick }) => {
+    const navigate = useNavigate(); // Add this line to get the navigate function
+
+    return (
+        <AnimatedSection>
+            <div className="max-w-4xl mx-auto text-center py-16 px-6 sm:px-8 relative overflow-hidden bg-white/60 border border-gray-100 rounded-2xl shadow-xl">
+                 <div className="absolute inset-0 z-0 opacity-10">
+                    <div className="absolute top-0 -left-1/4 w-96 h-96 bg-purple-400 rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 -right-1/4 w-96 h-96 bg-indigo-400 rounded-full blur-3xl"></div>
+                </div>
+                <div className="relative z-10">
+                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Ready to Transform Your Skills?</h2>
+                    <p className="text-lg sm:text-xl text-gray-600 mb-8">Join thousands of learners and teachers already growing together on SkillSwap.</p>
+                    <motion.button
+                        whileHover={{ scale: 1.05, boxShadow: "0px 10px 30px rgba(124, 58, 237, 0.4)" }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={onGetStartedClick} // Use the passed prop instead of navigate directly
+                        className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-10 py-5 rounded-full text-lg sm:text-xl font-bold transform transition-all duration-300 shadow-lg"
+                    >
+                        Join For Free
+                    </motion.button>
+                </div>
             </div>
-            <div className="relative z-10">
-                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Ready to Transform Your Skills?</h2>
-                <p className="text-lg sm:text-xl text-gray-600 mb-8">Join thousands of learners and teachers already growing together on SkillSwap.</p>
-                <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: "0px 10px 30px rgba(124, 58, 237, 0.4)" }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={onGetStartedClick}
-                    className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-10 py-5 rounded-full text-lg sm:text-xl font-bold transform transition-all duration-300 shadow-lg"
-                >
-                    Join For Free
-                </motion.button>
-            </div>
-        </div>
-    </AnimatedSection>
-);
+        </AnimatedSection>
+    );
+};
 
 const Footer = () => (
     <footer className="bg-gray-800 text-white">
@@ -440,10 +452,8 @@ const HomePage = () => {
             <PopularSkillsSection />
             <TestimonialsSection />
             <CtaSection onGetStartedClick={handleGetStarted} />
-          
         </div>
     );
 };
 
 export default HomePage;
-
