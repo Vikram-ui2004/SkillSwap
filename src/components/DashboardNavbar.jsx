@@ -286,8 +286,11 @@ const DashboardNavbar = () => {
                   />
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">
-                      {user?.displayName || user?.email?.split("@")[0]}
+                       {currentUser?.name || user?.displayName || user?.email?.split("@")[0]}
                     </p>
+                     <p className="text-xs text-gray-500 dark:text-gray-400">
+      {currentUser?.role || "Teacher & Learner"}
+    </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       {user?.email}
                     </p>
@@ -298,30 +301,45 @@ const DashboardNavbar = () => {
               {/* Mobile Navigation Items */}
               <div className="p-6">
                 <nav className="space-y-2">
-                  {navItems.map((item, index) => (
+                  {navItems.map((item, index) => {
+                       const isActive = location.pathname === item.path;
+                    
+                       return (
                     <motion.button
                       key={item.name}
                       onClick={() => {
                         navigate(item.path);
                         setShowMobileMenu(false);
                       }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ${
-                        item.active
-                          ? "bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                      }`}
+                     className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
+        isActive
+          ? "bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300"
+          : "text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+      }`}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <item.icon size={20} />
-                      <span className="font-medium">{item.name}</span>
-                      {item.active && (
-                        <div className="ml-auto w-2 h-2 bg-purple-500 rounded-full" />
-                      )}
+                     <item.icon
+        size={18}
+        className={`transition-colors duration-300 ${
+          isActive
+            ? "text-purple-600 dark:text-purple-300"
+            : "text-gray-500 dark:text-gray-400"
+        }`}
+      />
+      <span>{item.name}</span>
+      {isActive && (
+        <motion.div
+          layoutId="activeDot"
+          className="w-2 h-2 bg-purple-500 rounded-full"
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        />
+      )}
                     </motion.button>
-                  ))}
+                       );
+   })};
                 </nav>
 
                 <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
