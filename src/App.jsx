@@ -11,14 +11,15 @@ import AuthPage from './Pages/Auth';
 import SkillListings from './Pages/SkillListings'; 
 import ProtectedRoute from './components/ProtectedRoute';
 import PostSkillPage from './Pages/SkillPostingPage';
+import SessionRequestPage from './Pages/SessionRequestPage';
 
-// Move constant outside component to avoid recreation on each render
 const PATHS_WITHOUT_MAIN_NAVBAR = new Set([
   '/auth', 
   '/dashboard', 
   '/skills', 
   '/matchmaking', 
-  '/skills/post'
+  '/skills/post',
+  '/skills/session'
 ]);
 
 function App() {
@@ -26,7 +27,6 @@ function App() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  // Use Set.has() for O(1) lookup instead of Array.includes()
   const hideMainNavbar = PATHS_WITHOUT_MAIN_NAVBAR.has(pathname);
 
   const handleLogout = async () => {
@@ -86,6 +86,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <PostSkillPage />
+              </ProtectedRoute>
+            }
+          />
+
+          
+          <Route
+            path="/skills/session"
+            element={
+              <ProtectedRoute>
+                <SessionRequestPage />
               </ProtectedRoute>
             }
           />
