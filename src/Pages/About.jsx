@@ -6,13 +6,11 @@ import NET from "vanta/dist/vanta.net.min.js";
 import * as THREE from "three";
 import { cn } from "../lib/utils";
 
-// --- Placeholder Images ---
-import teamMember1 from "../assets/svg1.svg";
-import teamMember2 from "../assets/svg2.svg";
-import teamMember3 from "../assets/svg3.svg";
-import teamMember4 from "../assets/svg4.svg"; // New team member image
+import teamMember1 from "../assets/user2.jpg";
+import teamMember2 from "../assets/user0.jpg";
+import teamMember3 from "../assets/user3.jpg";
+import teamMember4 from "../assets/user4.jpg"; 
 
-// --- Team Members Data ---
 const teamMembers = [
   { 
     image: teamMember1, 
@@ -211,7 +209,7 @@ const OurValuesSection = () => (
     </section>
 );
 
-// --- Enhanced Team Section with 3D Card Effect ---
+// --- Fixed Height Team Cards with Circular Images ---
 const TeamCard = ({ image, name, role, description }) => {
     const ref = useRef(null);
     const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -232,55 +230,105 @@ const TeamCard = ({ image, name, role, description }) => {
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
-            style={{ perspective: "1000px" }} 
+            style={{ perspective: "1200px" }} 
             onMouseMove={handleMouseMove} 
             onMouseLeave={handleMouseLeave}
+            className="group"
         >
-            <div ref={ref} className="bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-black/5 shadow-lg text-center transition-all duration-300 ease-out hover:shadow-2xl group">
-                <div className="relative mb-6">
-                    <img 
-                        src={image} 
-                        alt={name} 
-                        className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full mx-auto object-cover shadow-lg border-4 border-white group-hover:scale-105 transition-transform duration-300" 
-                    />
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div 
+                ref={ref} 
+                className="relative bg-gradient-to-br from-white/95 to-purple-50/80 backdrop-blur-xl h-[420px] sm:h-[450px] md:h-[480px] lg:h-[500px] flex flex-col p-6 sm:p-7 md:p-8 rounded-3xl border border-white/40 shadow-[0_20px_50px_rgba(126,105,171,0.15)] text-center transition-all duration-500 ease-out hover:shadow-[0_30px_80px_rgba(126,105,171,0.25)] hover:border-purple-300/50 group overflow-hidden"
+            >
+                {/* Animated background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-400/5 via-transparent to-indigo-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl"></div>
+                
+                {/* Floating orbs decoration */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-gradient-to-br from-purple-300/20 to-indigo-300/20 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110"></div>
+                <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-gradient-to-br from-pink-300/15 to-purple-300/15 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-all duration-700 delay-200 group-hover:scale-110"></div>
+                
+                {/* Image container with enhanced styling */}
+                <div className="relative mb-6 sm:mb-7 flex-shrink-0">
+                    <div className="relative flex justify-center">
+                        {/* Glow ring effect */}
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 to-indigo-400 p-1 opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110">
+                            <div className="w-full h-full rounded-full bg-white"></div>
+                        </div>
+                        
+                        {/* Main image - Perfect circle with aspect ratio */}
+                        <img 
+                            src={image} 
+                            alt={name} 
+                            className="relative w-44 h-44 sm:w-48 sm:h-48 md:w-44 md:h-44 lg:w-48 lg:h-48 rounded-full object-cover shadow-2xl border-4 border-white/80 group-hover:scale-105 transition-all duration-500 group-hover:shadow-[0_20px_40px_rgba(126,105,171,0.3)]" 
+                        />
+                        
+                        {/* Shimmer overlay */}
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-opacity duration-700"></div>
+                    </div>
+                    
+                    {/* Professional badge */}
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs px-3 py-1 rounded-full font-medium shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:translate-y-1">
+                        Team Member
+                    </div>
                 </div>
-                <h4 className="text-lg sm:text-xl font-bold text-[#1f2040] mb-2">{name}</h4>
-                <p className="text-[#7E69AB] font-semibold mb-3">{role}</p>
-                <p className="text-sm text-[#4b546e] leading-relaxed">{description}</p>
+                
+                {/* Content with consistent layout */}
+                <div className="relative z-10 flex flex-col flex-grow">
+                    <h4 className="text-lg sm:text-xl md:text-xl font-bold text-[#1f2040] mb-3 group-hover:text-purple-700 transition-colors duration-300">
+                        {name}
+                    </h4>
+                    
+                    {/* Role with gradient background */}
+                    <div className="inline-block bg-gradient-to-r from-purple-100 to-indigo-100 px-3 py-2 rounded-full mb-4 group-hover:from-purple-200 group-hover:to-indigo-200 transition-all duration-300">
+                        <p className="text-[#7E69AB] font-semibold text-sm sm:text-base bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                            {role}
+                        </p>
+                    </div>
+                    
+                    {/* Enhanced description with fixed height container */}
+                    <div className="flex-grow flex items-center justify-center">
+                        <p className="text-sm sm:text-sm text-[#4b546e] leading-relaxed font-medium group-hover:text-[#384060] transition-colors duration-300 line-clamp-3">
+                            {description}
+                        </p>
+                    </div>
+                    
+                    {/* Decorative line at bottom */}
+                    <div className="w-16 h-1 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full mx-auto mt-4 opacity-0 group-hover:opacity-100 group-hover:w-20 transition-all duration-500"></div>
+                </div>
             </div>
         </motion.div>
     );
 };
 
 const MeetTheTeamSection = () => (
-    <section className="py-16 sm:py-24 bg-[#f9f6ff] px-4 sm:px-8">
-        <div className="max-w-6xl mx-auto">
+    <section className="py-16 sm:py-20 bg-gradient-to-br from-[#f9f6ff] via-white to-[#f5ecff] px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12 sm:mb-16">
                 <motion.h2 
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.8 }}
                     viewport={{ once: true }}
-                    className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1f2040] mb-4"
+                    className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-transparent bg-gradient-to-r from-purple-700 via-indigo-600 to-purple-700 bg-clip-text mb-6"
                 >
                     Meet Our Amazing Team
                 </motion.h2>
                 <motion.p 
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
                     viewport={{ once: true }}
-                    className="text-base sm:text-lg text-[#4b546e] max-w-2xl mx-auto"
+                    className="text-base sm:text-lg text-[#4b546e] max-w-2xl mx-auto leading-relaxed"
                 >
-                    Four passionate individuals working together to revolutionize the way people learn and share knowledge.
+                    Four passionate visionaries working together to revolutionize the way people learn and share knowledge across the globe.
                 </motion.p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
+            
+            {/* Grid layout with consistent card heights */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 xl:gap-8">
                 {teamMembers.map((member, index) => (
                     <TeamCard 
                         key={index} 
